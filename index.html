@@ -76,9 +76,9 @@ table.stack{table-layout:fixed}.stack th,.stack td{white-space:normal;overflow-w
 .warn{color:var(--acc);font-weight:500}
 .lvl{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--line) 0 33.3%,#f0c419 33.3% 38.9%,#e8862a 38.9% 44.4%,#d42a20 44.4% 50%,#7b2c8f 50% 100%);position:relative;margin-top:10px}
 .lvl i{position:absolute;top:-5px;width:3px;height:20px;background:var(--ink);border-radius:2px;transform:translateX(-50%)}
-#m2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);max-width:1240px;margin:0 auto;padding-top:0}
+#m2,#m3{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);max-width:1240px;margin:0 auto;padding-top:0}
 main[hidden],#m2[hidden]{display:none!important}
-#m2>div:first-child{position:sticky;top:12px;align-self:start}
+#m2>div:first-child,#m3>div:first-child{position:sticky;top:12px;align-self:start}
 .mapbox{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#e9ede4}
 #mapRot{position:absolute;left:-20.72%;top:-20.72%;width:141.43%;height:141.43%;transform-origin:50% 50%}
 #lmap{position:absolute;inset:0;background:#e9ede4}
@@ -86,14 +86,21 @@ main[hidden],#m2[hidden]{display:none!important}
 #ndl2{position:absolute;width:100px;height:100px;left:calc(50% - 50px);top:calc(50% - 50px);pointer-events:none;z-index:600}
 .mapbadge{position:absolute;left:10px;top:10px;z-index:700;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:13px;font-weight:600}
 .glab{font:600 11px Barlow,sans-serif;color:#1f5fbf;background:rgba(255,255,255,.8);padding:0 3px;border-radius:3px;white-space:nowrap;width:auto!important;height:auto!important}
-#mapEmpty{position:absolute;inset:0;z-index:800;display:grid;place-items:center;text-align:center;padding:24px;background:var(--card);color:var(--mut)}#mapEmpty b{color:var(--ink);font-size:18px}#mapEmpty[hidden]{display:none}
+.mapEmpty,#mapEmpty{position:absolute;inset:0;z-index:800;display:grid;place-items:center;text-align:center;padding:24px;background:var(--card);color:var(--mut)}#mapEmpty b{color:var(--ink);font-size:18px}#mapEmpty[hidden],.mapEmpty[hidden]{display:none}#mapEmpty3 b{color:var(--ink);font-size:18px}
 .seg{display:flex;gap:8px;margin-top:12px}.seg label{display:flex;gap:6px;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:8px;cursor:pointer}.seg label:has(input:checked){border-color:var(--ink);background:var(--ink);color:var(--bg)}.seg input{accent-color:var(--acc)}
 #shQ{font:16px Barlow,sans-serif;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .shlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.shlist button{min-height:44px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:4px 12px;font:15px Barlow,sans-serif;cursor:pointer}.shlist b{color:var(--acc);margin-right:6px}
 .shsel{margin-top:12px;padding:10px 12px;border-radius:8px;background:light-dark(#f2f2ee,#222527)}
+#map3{position:absolute;inset:0;background:#e9ede4}
+#sbar{position:absolute;left:10px;bottom:10px;z-index:700;overflow:visible;pointer-events:none}
+.ptlab{font:700 12px Barlow,sans-serif;color:#fff;background:#d42a20;border-radius:50%;width:22px!important;height:22px!important;display:grid;place-items:center;border:2px solid #fff}
+.ptlab.ab{background:#1b1b1b}
+#d3In{font:16px Barlow,sans-serif;width:120px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.tg input[type=number]{font:16px Barlow,sans-serif;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:auto;height:auto}
+.prof{width:100%;height:auto;display:block;margin-top:10px}
 .tg{display:flex;gap:8px;align-items:center;min-height:44px;font-size:15px;margin-right:10px}.tg input{width:20px;height:20px;accent-color:var(--acc)}
 a.chip{text-decoration:none}
-@media(max-width:900px){#m2{grid-template-columns:minmax(0,1fr)}#m2>div:first-child{position:static}}
+@media(max-width:900px){#m2,#m3{grid-template-columns:minmax(0,1fr)}#m2>div:first-child,#m3>div:first-child{position:static}}
 @media(max-width:900px){main{grid-template-columns:minmax(0,1fr)}.fig{position:static}.fig svg{max-height:none}}
 @media(prefers-reduced-motion:no-preference){#cap,#ndl,#arw{transition:transform .35s cubic-bezier(.3,.8,.3,1)}}
 </style>
@@ -282,6 +289,77 @@ a.chip{text-decoration:none}
   </section>
 </main>
 
+<main class="band" id="m3" hidden>
+  <div>
+    <div class="mapbox" id="mapbox3">
+      <div id="map3"></div>
+      <svg id="sbar" aria-hidden="true"></svg>
+      <div class="mapbadge" id="mbadge3" hidden></div>
+      <div id="mapEmpty3" class="mapEmpty"><div><b>Noch kein Kartenblatt gewählt</b><br>Wähle dein Blatt in <a href="#karte">Modul 2</a>. Es gilt dann für alle Module.</div></div>
+    </div>
+    <p class="note">Kartendaten und Höhenmodell © swisstopo. Distanzen sind horizontal gemessen, wie auf der Karte. Der Massstabsbalken zeigt, wie lang 1 cm deiner Papierkarte hier auf dem Bildschirm ist.</p>
+  </div>
+
+  <section>
+    <div class="card">
+      <h2>Massstab verstehen</h2>
+      <table class="stack" style="margin-top:8px"><thead><tr><th>Auf der Karte</th><th>1:25 000</th><th>1:50 000</th></tr></thead>
+      <tbody id="scTab">
+        <tr><td data-l="Auf der Karte">1 mm</td><td data-l="1:25 000">25 m</td><td data-l="1:50 000">50 m</td></tr>
+        <tr><td data-l="Auf der Karte">1 cm</td><td data-l="1:25 000">250 m</td><td data-l="1:50 000">500 m</td></tr>
+        <tr><td data-l="Auf der Karte">4 cm</td><td data-l="1:25 000">1 km</td><td data-l="1:50 000">2 km</td></tr>
+        <tr><td data-l="Auf der Karte">Gitterquadrat</td><td data-l="1:25 000">1 km = 4 cm</td><td data-l="1:50 000">1 km = 2 cm</td></tr>
+      </tbody></table>
+      <p class="note">Merksatz: Karten-cm mal Massstabszahl durch 100 = Meter im Gelände. Der Planzeiger des MC-2 trägt beide Skalen, du liest direkt in km ab.</p>
+    </div>
+
+    <div class="card">
+      <div class="tabs" role="group" aria-label="Übung" style="margin-bottom:10px">
+        <button id="d3Mess" aria-pressed="true">Strecke messen</button>
+        <button id="d3Est" aria-pressed="false">Distanz schätzen</button>
+      </div>
+      <div id="d3MessPane">
+        <p style="margin:0">Tippe auf der Karte Punkte für deine Route an. Die App misst jeden Abschnitt im Gelände und als Länge auf deiner Papierkarte.</p>
+        <div id="d3Seg"></div>
+        <div class="row"><button class="btn" id="d3Undo">Letzten Punkt entfernen</button><button class="btn" id="d3Clr">Neue Route</button><button class="btn pri" id="d3Prof">Höhenprofil und Gehzeit</button></div>
+        <div id="d3Out"></div>
+      </div>
+      <div id="d3EstPane" hidden>
+        <p style="margin:0">Schätze die Luftlinie von A nach B. Nutze den Massstabsbalken unten links oder das Gitter: ein Quadrat ist 1 km breit.</p>
+        <div class="row"><button class="btn pri" id="d3New">Neue Aufgabe</button><input type="number" id="d3In" min="0" step="10" inputmode="numeric" placeholder="Meter" aria-label="Geschätzte Distanz in Metern"><button class="btn" id="d3Chk">Prüfen</button></div>
+        <div id="d3Fb" aria-live="polite"></div>
+        <p class="note" id="d3Stat"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Dein Schrittmassstab</h3>
+      <p class="note" style="margin:0">Zähle Doppelschritte (jedes Mal, wenn derselbe Fuss aufsetzt) auf einer bekannten Strecke, am besten 100 bis 200 m auf flachem Weg.</p>
+      <div class="row">
+        <label class="tg" style="margin:0">Strecke <input type="number" id="psD" min="1" step="1" inputmode="numeric" placeholder="m" style="width:96px"></label>
+        <label class="tg" style="margin:0">Doppelschritte <input type="number" id="psN" min="1" step="1" inputmode="numeric" placeholder="Anzahl" style="width:96px"></label>
+      </div>
+      <div class="row"><button class="btn" id="psA">GPS: Start hier</button><button class="btn" id="psB" disabled>GPS: Ziel hier</button><span class="note" id="psGps"></span></div>
+      <div class="stat" id="psOut" style="margin-top:10px">–</div>
+      <div class="row">
+        <label class="tg" style="margin:0">Umrechnen <input type="number" id="psCv" min="0" step="1" inputmode="numeric" placeholder="Doppelschritte" style="width:130px"></label>
+        <span id="psCvOut" class="note"></span>
+      </div>
+      <p class="note">Bergauf, im Schnee oder im Dunkeln werden die Schritte kürzer. Bestimme den Massstab für solches Gelände separat.</p>
+    </div>
+
+    <div class="card">
+      <h3>Feldübung</h3>
+      <ol class="field">
+        <li>Miss auf deiner Papierkarte mit dem Planzeiger eine Strecke zwischen zwei markanten Punkten. Kontrolliere hier mit «Strecke messen».</li>
+        <li>Bestimme deinen Schrittmassstab auf 100 m, zum Beispiel zwischen zwei Gitterlinien oder mit GPS.</li>
+        <li>Geh eine auf der Karte gemessene Strecke ab und zähle mit. Weiche das Ergebnis mehr als 10 % ab, miss den Schrittmassstab neu.</li>
+        <li>Vergleiche die berechnete Gehzeit einer Route mit deiner tatsächlichen Zeit.</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
 <script>
 {
 const CX=200,CY=540,RED='#d42a20',INK='#1b1b1b';
@@ -425,7 +503,7 @@ document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>
 $('newTask').addEventListener('click',()=>{S.T=5*(2+Math.floor(Math.random()*68));draw()});
 $('tEx').addEventListener('click',()=>setMode('ex'));$('tLv').addEventListener('click',()=>setMode('lv'));$('tQz').addEventListener('click',()=>setMode('qz'));
 $('qGo').addEventListener('click',qStart);
-const LINKS={0:'aufbau',1:'karte'};
+const LINKS={0:'aufbau',1:'karte',2:'distanz'};
 $('mods').innerHTML=MODS.map((m,i)=>LINKS[i]!==undefined?`<a class="chip" href="#${LINKS[i]}" data-mod="${LINKS[i]}">${i+1} ${m}</a>`:`<span class="chip">${i+1} ${m}<small>folgt</small></span>`).join('');
 /* ---------- Live-Sensoren ---------- */
 const L={got:false,hx:0,hy:0,n:0,acc:null,beta:null,gamma:null,samples:null,raf:0,held:null,geo:null,cmp:[]};
@@ -601,12 +679,137 @@ $('tMer').addEventListener('change',e=>{if(M.mer&&M.map)e.target.checked?M.mer.a
 $('tCmp').addEventListener('change',m2Draw);
 $('tLive').addEventListener('change',()=>{if(M.pan)setPan(false);$('mMsg').textContent=$('tLive').checked&&!L.got?'Zuerst in Modul 1 › Live mit iPhone die Sensoren aktivieren.':'';m2Live();m2Draw()});
 function m2Init(){shRender();if(SH.sel&&!M.map)m2Setup()}
+/* ---------- Modul 3: Distanz messen ---------- */
+const D3={map:null,key:null,layers:[],pts:[],route:null,marks:[],task:null,ab:[],mode:'mess',stat:{n:0,sum:0},ps:{a:null}};
+try{const v=JSON.parse(localStorage.getItem('mc2-d3')||'{}');if(v.stat&&typeof v.stat.n==='number')D3.stat=v.stat;if(v.ps){if(v.ps.d)$('psD').value=v.ps.d;if(v.ps.n)$('psN').value=v.ps.n}}catch(e){}
+const d3Save=()=>{try{localStorage.setItem('mc2-d3',JSON.stringify({stat:D3.stat,ps:{d:$('psD').value,n:$('psN').value}}))}catch(e){}};
+const sden=()=>SH.sel?SH.sel.scale*1000:25000;
+const mfmt=m=>m>=1000?(m/1000).toFixed(2).replace(/\.?0+$/,'')+' km':Math.round(m)+' m';
+const cmfmt=m=>(m/(sden()/100)).toFixed(1)+' cm';
+const hm=min=>{const t=Math.max(5,Math.round(min/5)*5);return t<60?t+' min':Math.floor(t/60)+' h '+String(t%60).padStart(2,'0')+' min'};
+function d3Setup(){
+  const s=SH.sel;$('mapEmpty3').hidden=!!s;$('mbadge3').hidden=!s;
+  document.querySelectorAll('#scTab td:nth-child(2),#scTab td:nth-child(3)').forEach((td,i)=>td.style.fontWeight=s&&((i%2===0&&s.scale===25)||(i%2===1&&s.scale===50))?'600':'');
+  if(!s||!LF)return;
+  const key=s.scale+'-'+s.nr;
+  if(!D3.map){D3.map=LF.map('map3',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,boxZoom:false});D3.map.on('click',d3Click);D3.map.on('zoomend moveend resize',d3Bar)}
+  if(D3.key===key){setTimeout(()=>{D3.map.invalidateSize();d3Bar()},50);return}
+  D3.key=key;D3.layers.forEach(l=>l.remove());D3.layers=[];d3Clear();d3ClearTask();
+  const[x0,y0,x1,y1]=s.bbox;D3.map.setMaxBounds(null);D3.map.setView(wgs((x0+x1)/2,(y0+y1)/2),s.scale===25?14:13,{animate:false});
+  D3.layers.push(LF.tileLayer(`https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe-pk${s.scale}.noscale/default/current/3857/{z}/{x}/{y}.jpeg`,{maxZoom:18,minZoom:11}).addTo(D3.map));
+  const g=[];for(let E=Math.ceil(x0/1000)*1000;E<=x1;E+=1000){const a=[];for(let N=y0;N<=y1;N+=500)a.push(wgs(E,Math.min(N,y1)));g.push(LF.polyline(a,{color:'#1f5fbf',weight:1,opacity:.7,interactive:false}))}
+  for(let N=Math.ceil(y0/1000)*1000;N<=y1;N+=1000){const a=[];for(let E=x0;E<=x1;E+=500)a.push(wgs(Math.min(E,x1),N));g.push(LF.polyline(a,{color:'#1f5fbf',weight:1,opacity:.7,interactive:false}))}
+  const fr=[];[[x0,y0,x1,y0],[x1,y0,x1,y1],[x1,y1,x0,y1],[x0,y1,x0,y0]].forEach(([a,b,c,d])=>{for(let t=0;t<=20;t++)fr.push(wgs(a+(c-a)*t/20,b+(d-b)*t/20))});
+  g.push(LF.polyline(fr,{color:'#111',weight:2.5,interactive:false}));
+  D3.layers.push(LF.layerGroup(g).addTo(D3.map));
+  $('mbadge3').textContent=`LK${s.scale} ${s.nr} ${s.name}`;
+  setTimeout(()=>{D3.map.invalidateSize();d3Bar()},50);
+}
+function d3Bar(){
+  if(!D3.map||!SH.sel)return;const c=D3.map.getCenter(),[E,N]=lv95(c.lat,c.lng);
+  const p1=D3.map.latLngToContainerPoint(wgs(E,N)),p2=D3.map.latLngToContainerPoint(wgs(E+1000,N));
+  const pxkm=Math.hypot(p2.x-p1.x,p2.y-p1.y),cm=sden()/100;let n=4;const W=$('mapbox3').clientWidth*.6;while(n>1&&pxkm*cm*n/1000>W)n--;
+  const step=pxkm*cm/1000,len=step*n;let t='';
+  for(let i=0;i<=n;i++)t+=`<line x1="${(i*step).toFixed(1)}" x2="${(i*step).toFixed(1)}" y1="10" y2="${i%n?18:22}" stroke="#111" stroke-width="1.5"/><text x="${(i*step).toFixed(1)}" y="34" font-size="11" text-anchor="middle" font-family="Barlow" fill="#111">${i*cm>=1000?(i*cm/1000)+' km':i*cm+(i?' m':'')}</text>`;
+  $('sbar').setAttribute('width',Math.ceil(len+40));$('sbar').setAttribute('height','58');
+  $('sbar').innerHTML=`<rect x="-8" y="-4" width="${(len+34).toFixed(1)}" height="58" rx="6" fill="rgba(255,255,255,.88)"/>${Array.from({length:n},(_,i)=>`<rect x="${(i*step).toFixed(1)}" y="10" width="${step.toFixed(1)}" height="5" fill="${i%2?'#fff':'#111'}" stroke="#111"/>`).join('')}${t}<text x="0" y="48" font-size="10.5" font-family="Barlow" fill="#444">1 Feld = 1 cm auf deiner Karte</text>`;
+}
+function d3Click(e){
+  if(D3.mode!=='mess')return;const[E,N]=lv95(e.latlng.lat,e.latlng.lng);
+  if(SH.sel){const b=SH.sel.bbox;if(E<b[0]||E>b[2]||N<b[1]||N>b[3]){$('d3Out').innerHTML='<p class="warn">Der Punkt liegt ausserhalb deines Kartenblatts.</p>';return}}
+  D3.pts.push([E,N]);d3Draw();
+}
+function d3Draw(){
+  if(D3.route)D3.route.remove();D3.marks.forEach(m=>m.remove());D3.marks=[];
+  if(D3.pts.length){D3.route=LF.polyline(D3.pts.map(p=>wgs(p[0],p[1])),{color:'#d42a20',weight:3.5,interactive:false}).addTo(D3.map);
+    D3.pts.forEach((p,i)=>D3.marks.push(LF.marker(wgs(p[0],p[1]),{icon:LF.divIcon({className:'ptlab',html:String(i+1),iconSize:[22,22]}),interactive:false}).addTo(D3.map)))}
+  const seg=[];let tot=0;for(let i=1;i<D3.pts.length;i++){const d=Math.hypot(D3.pts[i][0]-D3.pts[i-1][0],D3.pts[i][1]-D3.pts[i-1][1]);tot+=d;seg.push([i,d,tot])}
+  $('d3Seg').innerHTML=seg.length?`<table><thead><tr><th>Abschnitt</th><th>Gelände</th><th>Karte</th><th>Total</th></tr></thead><tbody>${seg.map(([i,d,t])=>`<tr><td>${i} → ${i+1}</td><td>${mfmt(d)}</td><td>${cmfmt(d)}</td><td>${mfmt(t)}</td></tr>`).join('')}</tbody></table><div class="stat" style="margin-top:10px"><span class="big">${mfmt(tot)}</span><span>auf deiner Karte ${cmfmt(tot)} · Gehzeit flach ca. ${hm(tot/1000*15)}</span></div>`
+   :`<p class="note">${D3.pts.length?'Noch einen Punkt antippen.':'Noch keine Punkte.'}</p>`;
+}
+function d3Clear(){D3.pts=[];$('d3Out').innerHTML='';if(D3.map)d3Draw();else $('d3Seg').innerHTML=''}
+async function d3Prof(){
+  if(D3.pts.length<2){$('d3Out').innerHTML='<p class="warn">Mindestens zwei Punkte setzen.</p>';return}
+  let tot=0;for(let i=1;i<D3.pts.length;i++)tot+=Math.hypot(D3.pts[i][0]-D3.pts[i-1][0],D3.pts[i][1]-D3.pts[i-1][1]);
+  const nb=Math.max(50,Math.min(300,Math.round(tot/20)));
+  $('d3Out').innerHTML='<p class="note">Lade Höhenprofil von swisstopo …</p>';
+  try{
+    const geom=JSON.stringify({type:'LineString',coordinates:D3.pts.map(p=>[Math.round(p[0]),Math.round(p[1])])});
+    const r=await fetch(`https://api3.geo.admin.ch/rest/services/profile.json?geom=${encodeURIComponent(geom)}&sr=2056&nb_points=${nb}&distinct_points=true`).then(r=>r.json());
+    const P=(r||[]).map(x=>[+x.dist,+(x.alts&&(x.alts.COMB??x.alts.DTM2??x.alts.DTM25))]).filter(x=>isFinite(x[0])&&isFinite(x[1]));
+    if(P.length<2)throw new Error('leer');
+    let up=0,dn=0;for(let i=1;i<P.length;i++){const d=P[i][1]-P[i-1][1];if(d>0)up+=d;else dn-=d}
+    const km=P[P.length-1][0]/1000;
+    const tBfu=15*(km+up/100+dn/200);
+    const th=km/4*60,tv=(up/300+dn/500)*60,tDin=Math.max(th,tv)+Math.min(th,tv)/2;
+    const zs=P.map(x=>x[1]),zmin=Math.min(...zs),zmax=Math.max(...zs),W=600,H=170,l=44,b=24,t=10,rr=8;
+    const X=d=>l+(W-l-rr)*d/P[P.length-1][0],Y=z=>t+(H-t-b)*(1-(z-zmin)/Math.max(1,zmax-zmin));
+    const path=P.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join(' ');
+    $('d3Out').innerHTML=`<svg class="prof" viewBox="0 0 ${W} ${H}" role="img" aria-label="Höhenprofil der Route">
+      <path d="${path} L${X(P[P.length-1][0]).toFixed(1)} ${H-b} L${l} ${H-b}Z" fill="light-dark(#e6e4de,#2a2c2e)" style="fill:var(--line)"/>
+      <path d="${path}" fill="none" stroke="var(--ink)" stroke-width="1.6"/>
+      <line x1="${l}" x2="${W-rr}" y1="${H-b}" y2="${H-b}" stroke="var(--mut)" stroke-width=".8"/>
+      <text x="${l-6}" y="${Y(zmax)+4}" text-anchor="end" font-size="11" fill="var(--mut)" font-family="Barlow">${Math.round(zmax)} m</text>
+      <text x="${l-6}" y="${Y(zmin)+4}" text-anchor="end" font-size="11" fill="var(--mut)" font-family="Barlow">${Math.round(zmin)} m</text>
+      <text x="${l}" y="${H-6}" font-size="11" fill="var(--mut)" font-family="Barlow">0</text>
+      <text x="${W-rr}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--mut)" font-family="Barlow">${km.toFixed(2)} km</text></svg>
+      <table><thead><tr><th>Grösse</th><th>Wert</th></tr></thead><tbody>
+      <tr><td>Distanz (horizontal)</td><td>${km.toFixed(2)} km</td></tr><tr><td>Aufstieg</td><td>${Math.round(up)} m</td></tr><tr><td>Abstieg</td><td>${Math.round(dn)} m</td></tr>
+      <tr><td><b>Gehzeit Faustregel bfu / Wanderwege</b></td><td><b>${hm(tBfu)}</b></td></tr><tr><td>Gehzeit DIN 33466 (vereinfacht)</td><td>${hm(tDin)}</td></tr></tbody></table>
+      <p class="note">Faustregel bfu/Schweizer Wanderwege: je 15 min pro km, pro 100 m Aufstieg und pro 200 m Abstieg, addiert. DIN 33466: 4 km/h, 300 m/h Aufstieg, 500 m/h Abstieg; kürzere Zeit halbiert und zur längeren addiert, hier über die ganze Route statt abschnittsweise. Beide ohne Pausen. Höhen aus dem swisstopo-Höhenmodell entlang der Luftlinie zwischen deinen Punkten, nicht entlang des Wegs.</p>`;
+  }catch(e){$('d3Out').innerHTML='<p class="warn">Höhenprofil nicht verfügbar. Internetverbindung prüfen.</p>'}
+}
+function d3ClearTask(){D3.ab.forEach(m=>m.remove());D3.ab=[];D3.task=null;$('d3Fb').innerHTML=''}
+function d3New(){
+  if(!D3.map||!SH.sel)return;d3ClearTask();
+  const bb=D3.map.getBounds(),sw=lv95(bb.getSouth(),bb.getWest()),ne=lv95(bb.getNorth(),bb.getEast()),b=SH.sel.bbox;
+  const ex0=Math.max(b[0],sw[0]),ex1=Math.min(b[2],ne[0]),ny0=Math.max(b[1],sw[1]),ny1=Math.min(b[3],ne[1]);
+  const w=ex1-ex0,h=ny1-ny0;if(w<400||h<400){$('d3Fb').innerHTML='<p class="warn">Zu wenig Karte sichtbar. Verschiebe oder verkleinere die Ansicht.</p>';return}
+  let A,B,d,k=0;do{A=[ex0+w*(.15+.7*Math.random()),ny0+h*(.15+.7*Math.random())];B=[ex0+w*(.15+.7*Math.random()),ny0+h*(.15+.7*Math.random())];d=Math.hypot(B[0]-A[0],B[1]-A[1]);k++}while((d<300||d>3500)&&k<200);
+  D3.task={A,B,d};
+  D3.ab.push(LF.polyline([wgs(...A),wgs(...B)],{color:'#1b1b1b',weight:1.5,dashArray:'4 6',interactive:false}).addTo(D3.map));
+  [['A',A],['B',B]].forEach(([t,p])=>D3.ab.push(LF.marker(wgs(...p),{icon:LF.divIcon({className:'ptlab ab',html:t,iconSize:[22,22]}),interactive:false}).addTo(D3.map)));
+  $('d3In').value='';$('d3In').focus();
+}
+function d3Chk(){
+  const T=D3.task;if(!T){$('d3Fb').innerHTML='<p class="warn">Zuerst «Neue Aufgabe».</p>';return}
+  const v=+$('d3In').value;if(!(v>0)){$('d3Fb').innerHTML='<p class="warn">Gib deine Schätzung in Metern ein.</p>';return}
+  const err=(v-T.d)/T.d*100,ab=Math.abs(err);D3.stat.n++;D3.stat.sum+=ab;d3Save();
+  $('d3Fb').innerHTML=`<div class="stat ${ab<=10?'good':''}" style="margin-top:10px"><span class="big">${mfmt(T.d)}</span><span>Deine Schätzung: ${mfmt(v)} (${err>0?'+':''}${err.toFixed(0)} %). ${ab<=10?'Sehr gut.':ab<=25?'Brauchbar.':'Daneben: zähle die Gitterquadrate.'}</span></div><p class="note">Lösungsweg: Auf deiner Karte sind es ${cmfmt(T.d)}. ${cmfmt(T.d).replace(' cm','')} × ${sden()/100} m ≈ ${Math.round(T.d)} m.</p>`;
+  d3Stat();
+}
+function d3Stat(){$('d3Stat').textContent=D3.stat.n?`Bisher ${D3.stat.n} ${D3.stat.n===1?'Schätzung':'Schätzungen'}, mittlere Abweichung ${(D3.stat.sum/D3.stat.n).toFixed(0)} %.`:''}
+function d3Mode(m){D3.mode=m;$('d3Mess').setAttribute('aria-pressed',m==='mess');$('d3Est').setAttribute('aria-pressed',m==='est');$('d3MessPane').hidden=m!=='mess';$('d3EstPane').hidden=m!=='est';
+  if(m==='est'){if(D3.route)D3.route.remove();D3.marks.forEach(x=>x.remove());if(!D3.task)d3New()}else{D3.ab.forEach(x=>x.remove());D3.ab=[];D3.task=null;d3Draw()}}
+/* Schrittmassstab */
+function psCalc(){
+  const d=+$('psD').value,n=+$('psN').value;d3Save();
+  if(d>0&&n>0){const m=d/n;$('psOut').innerHTML=`<span class="big">${m.toFixed(2)} m</span><span>pro Doppelschritt · ${(100/m).toFixed(0)} Doppelschritte auf 100 m</span>`}else $('psOut').textContent='Strecke und Doppelschritte eingeben.';
+  const c=+$('psCv').value;$('psCvOut').textContent=d>0&&n>0&&c>0?`= ${Math.round(c*d/n)} m`:'';
+}
+function psGps(which){
+  if(!navigator.geolocation){$('psGps').textContent='Standort nicht unterstützt.';return}
+  $('psGps').textContent='Suche GPS …';
+  navigator.geolocation.getCurrentPosition(pos=>{const p=lv95(pos.coords.latitude,pos.coords.longitude),a=Math.round(pos.coords.accuracy);
+    if(which==='A'){D3.ps.a={p,a};$('psB').disabled=false;$('psGps').textContent=`Start gesetzt (±${a} m). Geh los und zähle.`}
+    else if(D3.ps.a){const d=Math.hypot(p[0]-D3.ps.a.p[0],p[1]-D3.ps.a.p[1]);$('psD').value=Math.round(d);$('psGps').textContent=`Luftlinie ${Math.round(d)} m, Unsicherheit etwa ±${a+D3.ps.a.a} m. Gerade Strecke gehen.`;psCalc()}
+  },err=>{$('psGps').textContent=geoErr(err)},{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+}
+$('d3Mess').addEventListener('click',()=>d3Mode('mess'));$('d3Est').addEventListener('click',()=>d3Mode('est'));
+$('d3Undo').addEventListener('click',()=>{D3.pts.pop();$('d3Out').innerHTML='';d3Draw()});
+$('d3Clr').addEventListener('click',d3Clear);$('d3Prof').addEventListener('click',d3Prof);
+$('d3New').addEventListener('click',d3New);$('d3Chk').addEventListener('click',d3Chk);
+$('d3In').addEventListener('keydown',e=>{if(e.key==='Enter')d3Chk()});
+['psD','psN','psCv'].forEach(id=>$(id).addEventListener('input',psCalc));
+$('psA').addEventListener('click',()=>psGps('A'));$('psB').addEventListener('click',()=>psGps('B'));
+psCalc();d3Stat();
 /* ---------- Navigation ---------- */
-const SUBS={aufbau:'Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.',karte:'Modul 2 von 9: Orientierung auf der Karte. Wähle dein Kartenblatt, norde es mit dem Kompass ein und lerne die drei Nordrichtungen kennen.'};
-function route(){const h=location.hash.replace('#','');const k=h==='karte'?'karte':'aufbau';
-  $('m1').hidden=k!=='aufbau';$('m2').hidden=k!=='karte';$('sub').textContent=SUBS[k];
+const SUBS={aufbau:'Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.',karte:'Modul 2 von 9: Orientierung auf der Karte. Wähle dein Kartenblatt, norde es mit dem Kompass ein und lerne die drei Nordrichtungen kennen.',distanz:'Modul 3 von 9: Distanz messen. Miss Strecken auf deinem Kartenblatt, schätze Distanzen, berechne Gehzeiten und bestimme deinen Schrittmassstab.'};
+function route(){const h=location.hash.replace('#','');const k=['karte','distanz'].includes(h)?h:'aufbau';
+  $('m1').hidden=k!=='aufbau';$('m2').hidden=k!=='karte';$('m3').hidden=k!=='distanz';$('sub').textContent=SUBS[k];
   document.querySelectorAll('#mods [data-mod]').forEach(a=>a.classList.toggle('on',a.dataset.mod===k));
-  if(k==='karte'){m2Init();if(M.map)setTimeout(()=>{M.map.invalidateSize();m2Draw()},50)}}
+  if(k==='karte'){m2Init();if(M.map)setTimeout(()=>{M.map.invalidateSize();m2Draw()},50)}
+  if(k==='distanz')d3Setup();}
 window.addEventListener('hashchange',route);route();
 if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
 draw();
