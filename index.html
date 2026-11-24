@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kompass lernen – MC-2</title>
+<meta name="theme-color" content="#d42a20">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kompass">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: ruhig, präzise, wie ein gutes Lehrmittel der Alpenclubs – wenig Farbe, feine Linien.
+   IDEA: die Seite verhält sich wie die Anleitung zum Gerät: ein grosses Gerätebild mit nummerierten Teilen.
+   PICTURE: der MC-2 selbst, aufgeklappt, mit drehbarem Ring und lebender Nadel.
+   COLOUR and TYPE: Weiss, Tinte, Kompassrot #d42a20, Ring-Creme; Barlow / Barlow Condensed (DIN-artig wie die Gerätebeschriftung).
+   LAYOUT: links Gerät gross, rechts Steuerung und Erklärung; unter 900px gestapelt. */
+:root{color-scheme:light dark;--bg:light-dark(#fbfbf9,#111213);--ink:light-dark(#17191b,#ebebe8);--mut:light-dark(#5d6266,#a3a7aa);--line:light-dark(#dcdcd6,#2d3033);--card:light-dark(#ffffff,#1a1c1e);--plate:light-dark(rgba(214,226,232,.45),rgba(255,255,255,.07));--edge:light-dark(#9aa6ad,#5c666c);--acc:#d42a20;--ok:light-dark(#1f6f4a,#5fc293)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Barlow,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Barlow Condensed",Barlow,sans-serif;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,4.4vw,48px)}h2{font-size:26px}h3{font-size:18px;margin-bottom:4px}
+.band{padding:clamp(20px,3.5vw,44px) max(5vw,16px)}
+header p{color:var(--mut);max-width:62ch;margin:.5em 0 0}
+.scroll{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;scrollbar-width:thin}
+.chip{flex:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px;color:var(--mut);background:transparent;white-space:nowrap}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip small{opacity:.7;margin-left:4px}
+main{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);max-width:1240px;margin:0 auto;padding-top:0}
+.fig{position:sticky;top:12px;align-self:start}
+.fig svg{display:block;width:100%;height:auto;max-height:88vh;touch-action:manipulation}
+[data-p],[data-h]{cursor:pointer}
+.hl{filter:drop-shadow(0 0 2px var(--acc)) drop-shadow(0 0 5px var(--acc))}
+.hs circle{fill:var(--ink);stroke:var(--bg);stroke-width:2}.hs text{fill:var(--bg);font:600 11px Barlow,sans-serif;text-anchor:middle;pointer-events:none}
+.hs.on circle{fill:var(--acc)}.quiz .hs{display:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tabs button,.btn{font:500 15px Barlow,sans-serif;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.ctl{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 8px;align-items:center;margin:10px 0}
+.ctl label{grid-column:1/-1;font-size:14px;color:var(--mut);display:flex;justify-content:space-between}
+.ctl label b{color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ctl .btn{min-width:52px;padding:0 8px}
+input[type=range]{width:100%;accent-color:var(--acc);height:44px}
+.stat{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:10px 12px;border-radius:8px;background:light-dark(#f2f2ee,#222527);font-size:15px}
+.stat .big{font:700 34px "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat.good{background:light-dark(#e3f1e9,#173326);color:var(--ok)}
+.nr{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;font-weight:600;font-size:14px;margin-right:8px;vertical-align:2px}
+dl{margin:10px 0 0}dt{font-size:13px;color:var(--mut);margin-top:10px}dd{margin:2px 0 0}
+.tag{display:inline-block;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:4px 4px 0 0;color:var(--mut)}
+.parts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;margin-top:8px;padding:0;list-style:none}
+.parts button{width:100%;text-align:left;min-height:44px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:6px 10px;font:15px Barlow,sans-serif;cursor:pointer}
+.parts button.seen{border-color:var(--ink)}.parts button span{display:inline-block;width:24px;color:var(--acc);font-weight:600}
+.meter{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}.meter i{display:block;height:100%;background:var(--acc)}
+.prompt{font:700 26px "Barlow Condensed",sans-serif;margin:6px 0}
+.fb{min-height:1.6em;font-weight:500}.fb.ok{color:var(--ok)}.fb.no{color:var(--acc)}
+ol.field{padding-left:20px;margin:8px 0 0}ol.field li{margin:6px 0}
+.note{font-size:13px;color:var(--mut)}
+.live .big{font-size:54px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.row input[type=number]{font:16px Barlow,sans-serif;width:110px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}th,td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}th{font-weight:500;color:var(--mut);font-size:13px}th:first-child,td:first-child{text-align:left}
+.warn{color:var(--acc);font-weight:500}
+.lvl{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--line) 0 33.3%,#f0c419 33.3% 38.9%,#e8862a 38.9% 44.4%,#d42a20 44.4% 50%,#7b2c8f 50% 100%);position:relative;margin-top:10px}
+.lvl i{position:absolute;top:-5px;width:3px;height:20px;background:var(--ink);border-radius:2px;transform:translateX(-50%)}
+@media(max-width:900px){main{grid-template-columns:minmax(0,1fr)}.fig{position:static}.fig svg{max-height:none}}
+@media(prefers-reduced-motion:no-preference){#cap,#ndl,#arw{transition:transform .35s cubic-bezier(.3,.8,.3,1)}}
+</style>
+</head>
+<body>
+<header class="band" style="padding-bottom:6px;max-width:1240px;margin:0 auto">
+  <h1>Kompass lernen mit dem Suunto MC-2</h1>
+  <p>Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.</p>
+  <nav class="scroll" id="mods" aria-label="Module"></nav>
+</header>
+
+<main class="band">
+  <div class="fig"><svg id="sv" viewBox="0 0 400 905" role="img" aria-label="Suunto MC-2 Spiegelkompass, aufgeklappt, mit nummerierten Teilen"></svg></div>
+
+  <section>
+    <div class="tabs" role="group" aria-label="Modus">
+      <button id="tEx" aria-pressed="true">Erkunden</button>
+      <button id="tQz" aria-pressed="false">Quiz</button>
+      <button id="tLv" aria-pressed="false">Live mit iPhone</button>
+    </div>
+
+    <div id="exPane">
+      <div class="card" id="info" aria-live="polite"></div>
+
+      <div class="card">
+        <h3>Ring und Gerät bewegen</h3>
+        <div class="ctl"><label for="rB">Drehring (Ablesung am Index) <b id="oB"></b></label>
+          <input type="range" id="rB" min="0" max="358" step="2"><button class="btn" data-d="B,-2">−2°</button><button class="btn" data-d="B,2">+2°</button></div>
+        <div class="ctl"><label for="rH">Gerät drehen (wohin der Marschrichtungspfeil zeigt) <b id="oH"></b></label>
+          <input type="range" id="rH" min="0" max="359" step="1"><button class="btn" data-d="H,-5">−5°</button><button class="btn" data-d="H,5">+5°</button></div>
+        <div class="ctl"><label for="rD">Deklination (Stellschraube) <b id="oD"></b></label>
+          <input type="range" id="rD" min="-10" max="10" step="1"></div>
+        <div class="stat" id="st"></div>
+        <p style="margin:14px 0 6px"><b>Mini-Aufgabe:</b> <span id="task"></span></p>
+        <button class="btn" id="newTask">Neue Aufgabe</button>
+      </div>
+
+      <div class="card">
+        <h3>Alle Teile</h3>
+        <div class="note" id="prog"></div>
+        <div class="meter"><i id="progBar"></i></div>
+        <ul class="parts" id="parts"></ul>
+      </div>
+
+      <div class="card">
+        <h3>Feldübung mit deinem MC-2</h3>
+        <ol class="field">
+          <li>Finde am Gerät alle 15 Teile. Benenne jedes laut, bevor du hier nachschaust.</li>
+          <li>Stell 0° am Index ein, halte den Kompass waagrecht vor dem Bauch und dreh dich, bis die rote Nadel im Nordpfeil liegt. Du schaust jetzt nach magnetisch Nord.</li>
+          <li>Lies an der Deklinationsskala ab, welcher Wert eingestellt ist. Den richtigen Wert für die Schweiz behandelt Modul 4.</li>
+          <li>Klapp den Spiegel auf etwa 45° und suche die Visierlinie im Spiegel: Sie muss durch die Kapselmitte laufen.</li>
+        </ol>
+        <p class="note">Abstand halten zu Handy, Schlüsseln, Autos und Stromleitungen: sie lenken die Nadel ab.</p>
+      </div>
+    </div>
+
+    <div id="qzPane" hidden>
+      <div class="card">
+        <div class="note" id="qCount"></div>
+        <div class="prompt" id="qPrompt"></div>
+        <div class="note">Tippe das Teil im Bild an. Die Nummern sind im Quiz ausgeblendet.</div>
+        <p class="fb" id="qFb" aria-live="polite"></p>
+        <button class="btn pri" id="qGo">Quiz starten</button>
+        <p class="note" id="qBest"></p>
+      </div>
+    </div>
+
+    <div id="lvPane" hidden>
+      <div class="card live">
+        <h3>iPhone-Kompass</h3>
+        <p class="note" style="margin:0 0 10px">iPhone hochkant und flach halten, Oberkante nach vorn – wie den Marschrichtungspfeil. Die Nadel im Bild folgt dann dem Gerät.</p>
+        <button class="btn pri" id="lvOn">Sensoren aktivieren</button>
+        <div class="stat" style="margin-top:12px"><span class="big" id="lvH">–</span><span id="lvAcc" class="note">noch keine Daten</span></div>
+        <div class="row"><label style="display:flex;gap:8px;align-items:center;min-height:44px"><input type="checkbox" id="lvFollow" checked style="width:20px;height:20px;accent-color:var(--acc)"> Nadel im Bild folgt dem iPhone</label></div>
+        <p class="warn" id="lvMsg"></p>
+      </div>
+
+      <div class="card">
+        <h3>MC-2 gegen iPhone</h3>
+        <p class="note" style="margin:0">Peile ein fernes Objekt mit dem MC-2 an, trage den Wert ein, leg das iPhone mit der Oberkante zum selben Objekt und miss 2 Sekunden.</p>
+        <div class="row"><input type="number" id="cmpIn" min="0" max="360" step="1" inputmode="numeric" placeholder="MC-2 °" aria-label="MC-2 Ablesung in Grad"><button class="btn pri" id="cmpGo">iPhone messen</button><button class="btn" id="cmpClr">Leeren</button></div>
+        <div id="cmpOut"></div>
+      </div>
+
+      <div class="card">
+        <h3>Hangneigung</h3>
+        <p class="note" style="margin:0">iPhone flach auf den Hang oder auf einen Stock in Falllinie legen. Danach mit dem Klinometer des MC-2 vergleichen.</p>
+        <div class="stat" style="margin-top:12px"><span class="big" id="tiltV">–</span><span id="tiltT" class="note"></span></div>
+        <div class="lvl" aria-hidden="true"><i id="tiltM" style="left:0"></i></div>
+        <div class="note" style="display:flex;justify-content:space-between;margin-top:4px"><span>0°</span><span>30°</span><span>45°</span><span>90°</span></div>
+        <div class="row"><button class="btn" id="tiltHold">Wert festhalten</button><span id="tiltHeld" class="note"></span></div>
+      </div>
+
+      <div class="card">
+        <h3>Standort in Landeskoordinaten (LV95)</h3>
+        <p class="note" style="margin:0">Zur Kontrolle deines Rückwärtseinschnitts. Umrechnung mit der Näherungsformel von swisstopo (etwa 1 m genau), die GPS-Genauigkeit ist meist schlechter.</p>
+        <div class="row"><button class="btn pri" id="geoGo">Standort bestimmen</button><button class="btn" id="geoCopy" hidden>Kopieren</button></div>
+        <div class="stat" style="margin-top:12px"><span id="geoOut">–</span></div>
+      </div>
+    </div>
+
+    <p class="note">Schematische Darstellung nach Gerätefoto und Suunto-Anleitung (Abschnitt Compass Anatomy), nicht massstäblich. Nummern 1–11 wie in der Anleitung; 12–15 sind weitere Merkmale des MC-2.</p>
+  </section>
+</main>
+
+<script>
+{
+const CX=200,CY=540,RED='#d42a20',INK='#1b1b1b';
+const MODS=['Aufbau','Orientierung auf der Karte','Distanz messen','Deklination','Navigieren','Anpeilen','Standort bestimmen','Signale mit dem Spiegel','Hangneigung'];
+const P=[
+{id:'nadel',n:1,name:'Magnetnadel',fn:'Die rote Spitze zeigt nach magnetisch Nord. Die Nadel schwimmt in Flüssigkeit und kommt dadurch schnell zur Ruhe.',dev:'Rote Hälfte mit hellem Leuchtstreifen. Kompass waagrecht halten, sonst klemmt die Nadel.',mod:[2,5,6]},
+{id:'pfeil',n:2,name:'Marschrichtungspfeil',fn:'Zeigt auf der Karte vom Start zum Ziel und im Gelände in die Gehrichtung.',dev:'Rotes Dreieck vorne auf der Grundplatte. Die Visierlinie läuft von hier zum Ableseindex.',mod:[5,6]},
+{id:'platte',n:3,name:'Grundplatte mit Linealen',fn:'Gerade Kanten zum Verbinden von Punkten auf der Karte. Lineal in cm (links) und in Zoll (rechts).',dev:'Transparent, damit die Karte darunter sichtbar bleibt. Die Gummipunkte in den Ecken verhindern das Rutschen auf der Karte.',mod:[2,3,5]},
+{id:'ring',n:4,name:'Drehring mit Gradeinteilung',fn:'360°-Skala als Winkelmesser. Ein Strich = 2°, Zahlen alle 20°. Die Buchstaben am schwarzen Ring sind englisch: E = Ost, W = West.',dev:'Zähle die Striche zwischen 20 und 40: zehn Abstände, also 2° pro Strich.',mod:[4,5,6,7]},
+{id:'kapsel',n:5,name:'Drehbare Kapsel',fn:'Flüssigkeitsgefüllte Dose, dreht zusammen mit dem Ring. Darin liegen Nadel, Nordlinien, Nordpfeil und Klinometer.',dev:'Kleine Luftbläschen durch Kälte oder Höhe sind unkritisch.',mod:[2,5]},
+{id:'index',n:6,name:'Ableseindex',fn:'Die Marke oben am Ring. Hier liest du die eingestellte Richtung (Azimut) in Grad ab.',dev:'Schwarzer Strich direkt unter dem Spiegelscharnier.',mod:[5,6,7]},
+{id:'linien',n:7,name:'Nordlinien',fn:'Rote Parallelen in der Kapsel. Auf der Karte legst du sie parallel zu den Nord-Süd-Linien.',dev:'Auf der Schweizer Landeskarte sind das die Koordinatenlinien (Gitternord, LV95), keine Meridiane. Der Unterschied ist klein; Modul 4 erklärt ihn.',mod:[2,4,5]},
+{id:'nordpfeil',n:8,name:'Nordpfeil (Orientierungspfeil)',fn:'Rot umrandeter Pfeil in der Kapsel. Liegt die Nadel genau darin («Rot in Rot»), ist der Kompass eingenordet und am Index steht die Marschrichtung.',dev:'Wird mit der Deklinationseinstellung um einige Grad gegenüber N verdreht.',mod:[2,4,5,6]},
+{id:'klino',n:9,name:'Klinometer',fn:'Schwarzer Pendelzeiger mit roter Skala 0–90°. Misst die Neigung, wenn das Gerät hochkant gehalten wird.',dev:'Ring so drehen, dass E oder W am Index steht, Kompass auf die lange Kante stellen: Der Zeiger pendelt auf 0.',mod:[9]},
+{id:'mittellinie',n:10,name:'Visierlinie im Spiegel',fn:'Hilfslinie: Im Spiegel muss sie durch die Kapselmitte laufen, dann hältst du den Kompass gerade.',dev:'Deckel auf etwa 45° öffnen und auf Augenhöhe halten.',mod:[6,7]},
+{id:'visier',n:11,name:'Kimme, Spiegel, Visierloch',fn:'Mit der Kimme oben am Deckel zielst du auf ein Objekt und siehst im Spiegel gleichzeitig Nadel und Ring. Der Spiegel dient auch als Signalspiegel.',dev:'Kerbe am oberen Deckelrand, Aussparung unten am Spiegel.',mod:[6,7,8]},
+{id:'romer',n:12,name:'Planzeiger 1:25 000 / 1:50 000',fn:'Winkelskala unten rechts. Derselbe Strich bedeutet 250 m bei 1:25 000 und 500 m bei 1:50 000. Damit misst du Distanzen und liest Koordinaten ab.',dev:'Beschriftet mit «0.25 km 1:25000» und «0.5 km 1:50000».',mod:[3,7]},
+{id:'dekl',n:13,name:'Deklinationsskala',fn:'Zeigt, um wie viele Grad der Nordpfeil gegenüber N verstellt ist. So korrigierst du die Abweichung zwischen Karten- und Magnetnord.',dev:'Beschriftet mit E DECL und W DECL. Verstellt wird mit der Stellschraube, das kleine Werkzeug hängt an der Kordel.',mod:[4]},
+{id:'lupe',n:14,name:'Lupe',fn:'Vergrössert kleine Kartendetails wie Höhenzahlen und Flurnamen.',dev:'Runde Linse links unten auf der Grundplatte.',mod:[2,7]},
+{id:'leucht',n:15,name:'Leuchtmarken',fn:'Nachleuchtende Punkte an Index, Nordpfeil und Nadel für die Orientierung in der Dämmerung.',dev:'Vorher kurz mit einer Lampe anleuchten, dann leuchten sie eine Weile nach.',mod:[5]}
+];
+const byId=Object.fromEntries(P.map(p=>[p.id,p]));
+let S={B:120,H:40,D:0,sel:null,mode:'ex',seen:[],best:0,T:135};
+try{const v=JSON.parse(localStorage.getItem('mc2-m1')||'{}');if(Array.isArray(v.seen))S.seen=v.seen.filter(x=>byId[x]);if(typeof v.best==='number')S.best=v.best}catch(e){}
+const save=()=>{try{localStorage.setItem('mc2-m1',JSON.stringify({seen:S.seen,best:S.best}))}catch(e){}};
+const $=id=>document.getElementById(id);
+const norm=a=>((a%360)+540)%360-180;
+const rot=(x,y,a)=>{a*=Math.PI/180;return[CX+x*Math.cos(a)-y*Math.sin(a),CY+x*Math.sin(a)+y*Math.cos(a)]};
+const pol=(r,a)=>rot(0,-r,a);
+const f=n=>n.toFixed(1);
+
+/* ---------- Zeichnung ---------- */
+let s=`<defs><linearGradient id="mir" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c5cfd4"/><stop offset=".45" stop-color="#eef2f4"/><stop offset="1" stop-color="#aab6bc"/></linearGradient></defs>`;
+s+=`<g data-p="visier"><rect x="75" y="28" width="250" height="302" rx="14" fill="var(--plate)" stroke="var(--edge)" stroke-width="1.5"/><rect x="92" y="62" width="216" height="232" rx="4" fill="url(#mir)" stroke="#8d9aa0"/><path d="M186 28 L200 46 L214 28" fill="var(--bg)" stroke="var(--edge)" stroke-width="1.5"/><path d="M176 294 A24 24 0 0 1 224 294 Z" fill="var(--bg)" stroke="#8d9aa0"/></g>`;
+s+=`<g data-p="mittellinie"><line x1="200" y1="50" x2="200" y2="290" stroke="${INK}" stroke-width="1.3"/><line x1="200" y1="50" x2="200" y2="290" stroke="transparent" stroke-width="16"/></g>`;
+s+=[96,186,276].map(x=>`<rect x="${x}" y="330" width="28" height="22" rx="3" fill="var(--edge)" opacity=".55"/>`).join('');
+/* Grundplatte */
+s+=`<g data-p="platte"><rect x="40" y="350" width="320" height="545" rx="16" fill="var(--plate)" stroke="var(--edge)" stroke-width="1.5"/>`;
+for(let mm=0;mm<=100;mm++){const y=360+mm*5,l=mm%10?mm%5?5:8:13;s+=`<line x1="40" x2="${40+l}" y1="${y}" y2="${y}" stroke="${RED}" stroke-width=".8"/>`;if(mm%10===0&&mm&&mm<100)s+=`<text x="58" y="${y+3}" font-size="9" fill="${RED}" font-family="Barlow">${mm/10}</text>`}
+s+=`<text x="47" y="885" font-size="11" font-weight="600" fill="${RED}" font-family="Barlow">cm</text>`;
+for(let i=0;i<=32;i++){const y=360+i*15.875,l=i%8===0?13:i%4===0?9:i%2===0?7:4;s+=`<line x1="${360-l}" x2="360" y1="${y}" y2="${y}" stroke="${RED}" stroke-width=".8"/>`;if(i%8===0&&i)s+=`<text x="337" y="${y+3}" font-size="9" fill="${RED}" font-family="Barlow">${i/8}</text>`}
+s+=`<text x="340" y="885" font-size="11" font-weight="600" fill="${RED}" font-family="Barlow">in</text>`;
+[[60,372],[340,372]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="9" fill="none" stroke="var(--edge)" opacity=".6"/>`);
+s+=`</g>`;
+/* Planzeiger */
+s+=`<g data-p="romer"><path d="M120 850 H320 V650" fill="none" stroke="${RED}" stroke-width="1.2"/>`;
+for(let i=0;i<=20;i++){const l=i%5?5:10;s+=`<line x1="${320-i*10}" x2="${320-i*10}" y1="850" y2="${850-l}" stroke="${RED}"/><line x1="320" x2="${320-l}" y1="${850-i*10}" y2="${850-i*10}" stroke="${RED}"/>`}
+[1,2,3,4].forEach(k=>{const x=320-k*50;s+=`<text x="${x}" y="837" font-size="8" fill="${RED}" text-anchor="middle" font-family="Barlow">${k*0.5}</text><text x="${x}" y="863" font-size="8" fill="${RED}" text-anchor="middle" font-family="Barlow">${k*0.25}</text>`});
+s+=`<text x="108" y="837" font-size="8" fill="${RED}" text-anchor="end" font-family="Barlow">km 1:50 000</text><text x="108" y="863" font-size="8" fill="${RED}" text-anchor="end" font-family="Barlow">km 1:25 000</text><rect x="66" y="826" width="264" height="44" fill="transparent"/><rect x="300" y="640" width="30" height="230" fill="transparent"/></g>`;
+s+=`<g data-p="lupe"><circle cx="105" cy="735" r="30" fill="rgba(255,255,255,.28)" stroke="var(--edge)" stroke-width="1.5"/><path d="M86 722 A22 22 0 0 1 112 712" stroke="#fff" stroke-width="2" fill="none" opacity=".8"/></g>`;
+s+=`<path data-p="pfeil" d="M200 748 L224 792 L176 792 Z" fill="${RED}"/>`;
+s+=`<g data-p="index"><rect x="197.5" y="380" width="5" height="17" fill="${INK}"/><rect x="185" y="372" width="30" height="30" fill="transparent"/></g>`;
+s+=`<circle data-p="leucht" cx="200" cy="371" r="3.2" fill="#dff0b8" stroke="#9fb27a" stroke-width=".6"/>`;
+/* Kapsel und Ring (drehen zusammen) */
+let c=`<g data-p="ring"><circle cx="${CX}" cy="${CY}" r="141" fill="#ebe5d4" stroke="#9c9585"/>`;
+for(let d=0;d<360;d+=2){const[x1,y1]=pol(141,d),[x2,y2]=pol(d%10?136:131,d);c+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${INK}" stroke-width="${d%10?.6:1}"/>`}
+for(let d=20;d<360;d+=20)c+=`<text x="${CX}" y="${CY-122}" font-size="9.5" text-anchor="middle" fill="${INK}" font-family="Barlow" transform="rotate(${d} ${CX} ${CY})">${d}</text>`;
+c+=`<circle cx="${CX}" cy="${CY}" r="119" fill="#1d1d1d"/>`;
+['N','NE','E','SE','S','SW','W','NW'].forEach((t,i)=>c+=`<text x="${CX}" y="${CY-106}" font-size="${i%2?9:12}" font-weight="700" text-anchor="middle" fill="#f2f2ee" font-family="Barlow" transform="rotate(${i*45} ${CX} ${CY})">${t}</text>`);
+c+=`</g><circle data-p="kapsel" cx="${CX}" cy="${CY}" r="102" fill="#f6f6f2" stroke="#2a2a2a" stroke-width="3"/>`;
+c+=`<g data-p="linien">`;[-58,-30,30,58].forEach(x=>{const h=Math.sqrt(96*96-x*x);c+=`<line x1="${CX+x}" x2="${CX+x}" y1="${f(CY-h)}" y2="${f(CY+h)}" stroke="${RED}" stroke-width="1.3"/><line x1="${CX+x}" x2="${CX+x}" y1="${f(CY-h)}" y2="${f(CY+h)}" stroke="transparent" stroke-width="10"/>`});c+=`</g>`;
+c+=`<g data-p="dekl">`;for(let d=-30;d<=30;d+=2){const[x1,y1]=pol(99,d),[x2,y2]=pol(d%10?95:91,d);c+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${RED}" stroke-width=".7"/>`}c+=`</g>`;
+c+=`<g data-p="klino">`;for(let d=90;d<=270;d+=2){const[x1,y1]=pol(99,d),[x2,y2]=pol(d%10?95:91,d);c+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${RED}" stroke-width=".7"/>`}
+[20,40,60,80].forEach(v=>[180-v,180+v].forEach(a=>{const[x,y]=pol(84,a);c+=`<text x="${f(x)}" y="${f(y+3)}" font-size="7.5" text-anchor="middle" fill="${RED}" font-family="Barlow">${v}</text>`}));
+c+=`<line x1="${CX}" y1="${CY-14}" x2="${CX}" y2="${CY+86}" stroke="${INK}" stroke-width="2"/><path d="M${CX-5} ${CY+76} L${CX} ${CY+90} L${CX+5} ${CY+76}Z" fill="${INK}"/><line x1="${CX}" y1="${CY}" x2="${CX}" y2="${CY+86}" stroke="transparent" stroke-width="12"/></g>`;
+c+=`<g id="arw"><path data-p="nordpfeil" d="M${CX-11} ${CY+28} V${CY-60} L${CX} ${CY-80} L${CX+11} ${CY-60} V${CY+28} Z" fill="rgba(212,42,32,.06)" stroke="${RED}" stroke-width="3" stroke-linejoin="round"/>`;
+[-22,22].forEach(x=>c+=`<circle data-p="leucht" cx="${CX+x}" cy="${CY+30}" r="4" fill="#dff0b8" stroke="#9fb27a" stroke-width=".6"/>`);c+=`</g>`;
+s+=`<g id="cap">${c}</g>`;
+s+=`<g id="ndl" data-p="nadel"><path d="M${CX-5.5} ${CY} L${CX} ${CY-88} L${CX+5.5} ${CY}Z" fill="${RED}"/><line x1="${CX}" y1="${CY-34}" x2="${CX}" y2="${CY-70}" stroke="#eef6dc" stroke-width="2.2"/><path d="M${CX-5.5} ${CY} L${CX} ${CY+88} L${CX+5.5} ${CY}Z" fill="#2b2b2b"/><path d="M${CX-8} ${CY} L${CX} ${CY-92} L${CX+8} ${CY} L${CX} ${CY+92}Z" fill="transparent"/></g>`;
+s+=`<circle cx="${CX}" cy="${CY}" r="7" fill="#333" stroke="#b9a46a" stroke-width="2" pointer-events="none"/>`;
+s+=`<g id="hs">${P.map(p=>`<g class="hs" data-h="${p.id}" id="h-${p.id}"><circle r="11"/><text y="4">${p.n}</text></g>`).join('')}</g>`;
+const sv=$('sv');sv.innerHTML=s;
+
+/* Positionen der Nummern */
+const fixed={platte:[82,872],pfeil:[244,772],romer:[296,800],index:[226,388],mittellinie:[216,170],visier:[230,46],lupe:[105,735],kapsel:pol(82,-128)};
+function hpos(id){
+  if(fixed[id])return fixed[id];
+  if(id==='ring')return pol(131,-52);
+  if(id==='nadel')return rot(0,-72,-S.H);
+  if(id==='nordpfeil')return rot(...rot(0,-46,S.D).map((v,i)=>v-(i?CY:CX)),-S.B);
+  if(id==='leucht')return rot(...rot(-22,30,S.D).map((v,i)=>v-(i?CY:CX)),-S.B);
+  if(id==='linien')return rot(-58,52,-S.B);
+  if(id==='klino')return rot(0,58,-S.B);
+  if(id==='dekl')return rot(...(()=>{const[x,y]=pol(92,22);return[x-CX,y-CY]})(),-S.B);
+}
+
+/* ---------- Anzeige ---------- */
+function draw(){
+  $('cap').setAttribute('transform',`rotate(${-S.B} ${CX} ${CY})`);
+  $('arw').setAttribute('transform',`rotate(${S.D} ${CX} ${CY})`);
+  $('ndl').setAttribute('transform',`rotate(${-S.H} ${CX} ${CY})`);
+  P.forEach(p=>{const[x,y]=hpos(p.id),g=$('h-'+p.id);g.setAttribute('transform',`translate(${f(x)} ${f(y)})`);g.classList.toggle('on',S.sel===p.id)});
+  document.querySelectorAll('#sv [data-p]').forEach(el=>el.classList.toggle('hl',S.mode==='ex'&&el.dataset.p===S.sel));
+  $('rB').value=S.B;$('rH').value=S.H;$('rD').value=S.D;
+  $('oB').textContent=S.B+'°';$('oH').textContent=S.H+'° magn.';$('oD').textContent=S.D===0?'0°':(Math.abs(S.D)+'° '+(S.D>0?'Ost':'West'));
+  const diff=norm(S.D-S.B+S.H),al=Math.abs(diff)<=2;
+  const st=$('st');st.classList.toggle('good',al);
+  st.innerHTML=`<span class="big">${S.B}°</span><span>${al?'Eingenordet: Rot liegt in Rot. Der Marschrichtungspfeil zeigt jetzt auf '+S.B+'°.':'Nadel liegt '+Math.abs(Math.round(diff))+'° neben dem Nordpfeil. '+(diff>0?'Gerät nach links':'Gerät nach rechts')+' drehen.'}</span>`;
+  const done=al&&Math.abs(norm(S.B-S.T))<=1;
+  $('task').innerHTML=done?`<span style="color:var(--ok);font-weight:600">Geschafft. Du gehst jetzt Richtung ${S.T}°.</span>`:`Geh in Richtung <b>${S.T}°</b>: zuerst den Ring auf ${S.T}° stellen, dann das Gerät drehen, bis Rot in Rot liegt.`;
+  info();parts();
+}
+function info(){
+  const p=byId[S.sel];
+  $('info').innerHTML=p?`<h2><span class="nr">${p.n}</span>${p.name}</h2>${p.n>11?'<div class="note" style="margin-top:6px">MC-2-Merkmal, nicht in der Anleitungsgrafik</div>':''}<dl><dt>Funktion</dt><dd>${p.fn}</dd><dt>Am Gerät prüfen</dt><dd>${p.dev}</dd><dt>Gebraucht in</dt><dd>${p.mod.map(m=>`<span class="tag">${m} ${MODS[m-1]}</span>`).join('')}</dd></dl>`
+  :`<h2>Tippe auf ein Teil</h2><p style="margin:8px 0 0;color:var(--mut)">Jede Nummer und jedes Teil im Bild ist anwählbar. Dreh am Ring und am Gerät und beobachte, was sich mitbewegt: Ring, Nordlinien, Nordpfeil und Klinometer drehen zusammen, die Nadel zeigt immer nach Norden.</p>`;
+}
+function parts(){
+  $('parts').innerHTML=P.map(p=>`<li><button data-sel="${p.id}" class="${S.seen.includes(p.id)?'seen':''}"><span>${p.n}</span>${p.name}</button></li>`).join('');
+  $('prog').textContent=`${S.seen.length} von ${P.length} Teilen erkundet`;
+  $('progBar').style.width=(S.seen.length/P.length*100)+'%';
+}
+function select(id){if(!byId[id])return;S.sel=id;if(!S.seen.includes(id)){S.seen.push(id);save()}draw()}
+
+/* ---------- Quiz ---------- */
+let Q=null;
+function qShow(){
+  $('qBest').textContent=S.best?`Bestes Ergebnis: ${S.best} von 10`:'';
+  if(!Q){$('qCount').textContent='10 Fragen';$('qPrompt').textContent='Findest du alle Teile?';$('qGo').hidden=false;$('qGo').textContent='Quiz starten';return}
+  if(Q.i>=Q.list.length){$('qCount').textContent='Fertig';$('qPrompt').textContent=`${Q.score} von 10 richtig`;$('qGo').hidden=false;$('qGo').textContent='Nochmals';return}
+  $('qGo').hidden=true;$('qCount').textContent=`Frage ${Q.i+1} von 10 · ${Q.score} richtig`;$('qPrompt').textContent=`Tippe auf: ${byId[Q.list[Q.i]].name}`;
+}
+function qStart(){const l=P.map(p=>p.id).sort(()=>Math.random()-.5).slice(0,10);Q={list:l,i:0,score:0,lock:false};$('qFb').textContent='';$('qFb').className='fb';qShow()}
+function qAnswer(id){
+  if(!Q||Q.lock||Q.i>=Q.list.length)return;
+  const t=Q.list[Q.i],ok=id===t;Q.lock=true;if(ok)Q.score++;
+  $('qFb').className='fb '+(ok?'ok':'no');$('qFb').textContent=ok?'Richtig.':`Nicht ganz: Das war «${byId[id].name}».`;
+  document.querySelectorAll(`#sv [data-p="${t}"]`).forEach(el=>el.classList.add('hl'));
+  setTimeout(()=>{document.querySelectorAll('#sv .hl').forEach(el=>el.classList.remove('hl'));Q.i++;Q.lock=false;$('qFb').textContent='';if(Q.i>=Q.list.length&&Q.score>S.best){S.best=Q.score;save()}qShow()},ok?800:1600);
+}
+function setMode(m){S.mode=m;document.body.classList.toggle('quiz',m==='qz');[['tEx','ex'],['tQz','qz'],['tLv','lv']].forEach(([b,k])=>$(b).setAttribute('aria-pressed',m===k));$('exPane').hidden=m!=='ex';$('qzPane').hidden=m!=='qz';$('lvPane').hidden=m!=='lv';if(m==='qz'){Q=null;qShow()}draw()}
+
+/* ---------- Ereignisse ---------- */
+sv.addEventListener('click',e=>{const t=e.target.closest('[data-h],[data-p]');if(!t)return;const id=t.dataset.h||t.dataset.p;S.mode==='qz'?qAnswer(id):select(id)});
+$('parts').addEventListener('click',e=>{const b=e.target.closest('[data-sel]');if(b)select(b.dataset.sel)});
+const clampB=v=>((Math.round(v/2)*2)%360+360)%360;
+$('rB').addEventListener('input',e=>{S.B=clampB(+e.target.value);draw()});
+$('rH').addEventListener('input',e=>{S.H=+e.target.value;draw()});
+$('rD').addEventListener('input',e=>{S.D=+e.target.value;draw()});
+document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{const[k,v]=b.dataset.d.split(',');if(k==='B')S.B=clampB(S.B+ +v);else S.H=((S.H+ +v)%360+360)%360;draw()}));
+$('newTask').addEventListener('click',()=>{S.T=5*(2+Math.floor(Math.random()*68));draw()});
+$('tEx').addEventListener('click',()=>setMode('ex'));$('tLv').addEventListener('click',()=>setMode('lv'));$('tQz').addEventListener('click',()=>setMode('qz'));
+$('qGo').addEventListener('click',qStart);
+$('mods').innerHTML=MODS.map((m,i)=>`<span class="chip${i?'':' on'}">${i+1} ${m}${i?'<small>folgt</small>':''}</span>`).join('');
+/* ---------- Live-Sensoren ---------- */
+const L={got:false,hx:0,hy:0,n:0,acc:null,beta:null,gamma:null,samples:null,raf:0,held:null,geo:null,cmp:[]};
+try{const v=JSON.parse(localStorage.getItem('mc2-cmp')||'[]');if(Array.isArray(v))L.cmp=v.filter(r=>typeof r.m==='number'&&typeof r.i==='number').slice(-30)}catch(e){}
+const deg=r=>(r*180/Math.PI+360)%360;
+const heading=()=>deg(Math.atan2(L.hy,L.hx));
+function onOri(e){
+  let h=null;
+  if(typeof e.webkitCompassHeading==='number'&&!isNaN(e.webkitCompassHeading)){h=e.webkitCompassHeading;L.acc=e.webkitCompassAccuracy}
+  else if(e.absolute&&typeof e.alpha==='number'){h=(360-e.alpha)%360}
+  if(typeof e.beta==='number'){L.beta=e.beta;L.gamma=e.gamma}
+  if(h!==null){L.got=true;const r=h*Math.PI/180,k=L.n<5?1:.18;L.n++;L.hx=L.hx*(1-k)+Math.cos(r)*k;L.hy=L.hy*(1-k)+Math.sin(r)*k;if(L.samples)L.samples.push(r)}
+  if(!L.raf)L.raf=requestAnimationFrame(liveDraw);
+}
+function tilt(){if(L.beta===null)return null;const b=L.beta*Math.PI/180,g=L.gamma*Math.PI/180;return Math.acos(Math.max(-1,Math.min(1,Math.cos(b)*Math.cos(g))))*180/Math.PI}
+function tiltText(t){return t<30?'unter 30°: kein Lawinenhang im Sinne der Faustregel':t<35?'30–35°: Lawinenhang, ab hier zählt die Steilheit':t<40?'35–40°: steil':t<45?'40–45°: sehr steil':'über 45°: extrem steil'}
+function liveDraw(){
+  L.raf=0;
+  if(L.got){const h=heading();$('lvH').textContent=Math.round(h)%360+'°';
+    $('lvAcc').textContent=typeof L.acc==='number'&&L.acc>=0?`Genauigkeit laut iPhone ±${Math.round(L.acc)}°${L.acc>15?' – Kalibrierung nötig: iPhone in einer Acht bewegen':''}`:'Genauigkeit nicht gemeldet';
+    if($('lvFollow').checked&&S.mode==='lv'){const v=Math.round(h)%360;if(v!==S.H){S.H=v;draw()}}}
+  const t=tilt();if(t!==null){$('tiltV').textContent=t.toFixed(0)+'°';$('tiltT').textContent=tiltText(t);$('tiltM').style.left=Math.min(100,t/90*100)+'%'}
+}
+async function liveOn(){
+  $('lvMsg').textContent='';
+  try{
+    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
+      const r=await DeviceOrientationEvent.requestPermission();
+      if(r!=='granted'){$('lvMsg').textContent='Zugriff abgelehnt. In Safari: Einstellungen › Apps › Safari › Bewegung und Ausrichtung erlauben, Seite neu laden.';return}
+    }
+  }catch(err){$('lvMsg').textContent='Sensorfreigabe nicht möglich. Läuft die Seite in der claude.ai-Vorschau? Dort sind Sensoren gesperrt – öffne die Web-App über ihre eigene HTTPS-Adresse in Safari.';return}
+  window.addEventListener('deviceorientationabsolute',onOri);window.addEventListener('deviceorientation',onOri);
+  $('lvOn').textContent='Sensoren aktiv';$('lvOn').disabled=true;
+  setTimeout(()=>{if(!L.got&&L.beta===null){$('lvMsg').textContent='Keine Sensordaten. Sensoren brauchen ein Gerät mit Kompass, HTTPS und laufen nicht in der claude.ai-Vorschau.';$('lvOn').disabled=false;$('lvOn').textContent='Erneut versuchen'}},2500);
+}
+function cmpRender(){
+  if(!L.cmp.length){$('cmpOut').innerHTML='';return}
+  const d=L.cmp.map(r=>norm(r.i-r.m)),m=d.reduce((a,b)=>a+b,0)/d.length,sd=d.length>1?Math.sqrt(d.reduce((a,b)=>a+(b-m)**2,0)/(d.length-1)):0;
+  $('cmpOut').innerHTML=`<table><thead><tr><th>Nr</th><th>MC-2</th><th>iPhone</th><th>Δ iPhone − MC-2</th></tr></thead><tbody>${L.cmp.map((r,k)=>`<tr><td>${k+1}</td><td>${r.m}°</td><td>${r.i}°</td><td>${d[k]>0?'+':''}${d[k]}°</td></tr>`).join('')}</tbody></table>
+  <p class="note">Mittel ${m>0?'+':''}${m.toFixed(1)}°${d.length>1?`, Streuung ±${sd.toFixed(1)}°`:''} (n = ${d.length}). Ein gleichbleibender Versatz von wenigen Grad spricht dafür, dass einer der beiden auf geografisch Nord bezogen ist (Deklination, Modul 4). Grosse Streuung deutet auf Störungen oder ein unkalibriertes iPhone.</p>`;
+}
+function cmpGo(){
+  const mv=+$('cmpIn').value;
+  if($('cmpIn').value===''||!(mv>=0&&mv<=360)){$('cmpOut').innerHTML='<p class="warn">Zuerst den MC-2-Wert (0–360°) eintragen.</p>';cmpRender();return}
+  if(!L.got){$('cmpOut').innerHTML='<p class="warn">Zuerst die Sensoren aktivieren.</p>';return}
+  L.samples=[];$('cmpGo').disabled=true;$('cmpGo').textContent='Misst …';
+  setTimeout(()=>{const sm=L.samples||[];L.samples=null;$('cmpGo').disabled=false;$('cmpGo').textContent='iPhone messen';
+    if(!sm.length){$('cmpOut').innerHTML='<p class="warn">Keine Messwerte erhalten.</p>';return}
+    const iv=Math.round(deg(Math.atan2(sm.reduce((a,r)=>a+Math.sin(r),0),sm.reduce((a,r)=>a+Math.cos(r),0))))%360;
+    L.cmp.push({m:Math.round(mv)%360,i:iv});try{localStorage.setItem('mc2-cmp',JSON.stringify(L.cmp))}catch(e){}cmpRender()},2000);
+}
+function lv95(lat,lon){const p=(lat*3600-169028.66)/1e4,l=(lon*3600-26782.5)/1e4;
+  return[2600072.37+211455.93*l-10938.51*l*p-0.36*l*p*p-44.54*l*l*l,1200147.07+308807.95*p+3745.25*l*l+76.63*p*p-194.56*l*l*p+119.79*p*p*p]}
+const fmt=v=>Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,"'");
+function geoGo(){
+  if(!navigator.geolocation){$('geoOut').textContent='Standort wird von diesem Browser nicht unterstützt.';return}
+  $('geoOut').textContent='Suche GPS …';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const{latitude:la,longitude:lo,accuracy:a}=pos.coords;
+    if(la<45.6||la>48.0||lo<5.7||lo>10.7){$('geoOut').textContent='Ausserhalb der Schweiz – LV95 gilt hier nicht.';return}
+    const[E,N]=lv95(la,lo);L.geo=`${fmt(E)} / ${fmt(N)}`;
+    $('geoOut').innerHTML=`<span class="big" style="font-size:28px">E ${fmt(E)}<br>N ${fmt(N)}</span><span class="note">GPS-Genauigkeit ±${Math.round(a)} m</span>`;$('geoCopy').hidden=false;
+  },err=>{$('geoOut').textContent=err.code===1?'Standortzugriff abgelehnt.':'Kein GPS-Signal. Im Freien erneut versuchen.'},{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+}
+$('lvOn').addEventListener('click',liveOn);
+$('cmpGo').addEventListener('click',cmpGo);
+$('cmpClr').addEventListener('click',()=>{L.cmp=[];try{localStorage.removeItem('mc2-cmp')}catch(e){}cmpRender()});
+$('tiltHold').addEventListener('click',()=>{const t=tilt();$('tiltHeld').textContent=t===null?'Noch keine Daten.':`Festgehalten: ${t.toFixed(1)}° – jetzt mit dem MC-2-Klinometer vergleichen.`});
+$('geoGo').addEventListener('click',geoGo);
+$('geoCopy').addEventListener('click',()=>{if(L.geo&&navigator.clipboard)navigator.clipboard.writeText(L.geo).then(()=>{$('geoCopy').textContent='Kopiert'},()=>{$('geoCopy').textContent='Nicht möglich'})});
+cmpRender();
+if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
+draw();
+}
+</script>
+</body>
+</html>
