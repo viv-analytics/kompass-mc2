@@ -10,6 +10,8 @@
 <meta name="apple-mobile-web-app-title" content="Kompass">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,6 +73,19 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}th,td{p
 .warn{color:var(--acc);font-weight:500}
 .lvl{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--line) 0 33.3%,#f0c419 33.3% 38.9%,#e8862a 38.9% 44.4%,#d42a20 44.4% 50%,#7b2c8f 50% 100%);position:relative;margin-top:10px}
 .lvl i{position:absolute;top:-5px;width:3px;height:20px;background:var(--ink);border-radius:2px;transform:translateX(-50%)}
+#m2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);max-width:1240px;margin:0 auto;padding-top:0}
+main[hidden],#m2[hidden]{display:none!important}
+#m2>div:first-child{position:sticky;top:12px;align-self:start}
+.mapbox{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#e9ede4}
+#mapRot{position:absolute;left:-20.72%;top:-20.72%;width:141.43%;height:141.43%;transform-origin:50% 50%}
+#lmap{position:absolute;inset:0;background:#e9ede4}
+#miniC{position:absolute;width:120px;height:200px;left:calc(50% - 60px);top:calc(50% - 95px);transform-origin:60px 95px;pointer-events:none;z-index:500}
+#ndl2{position:absolute;width:100px;height:100px;left:calc(50% - 50px);top:calc(50% - 50px);pointer-events:none;z-index:600}
+.mapbadge{position:absolute;left:10px;top:10px;z-index:700;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:13px;font-weight:600}
+.glab{font:600 11px Barlow,sans-serif;color:#1f5fbf;background:rgba(255,255,255,.8);padding:0 3px;border-radius:3px;white-space:nowrap;width:auto!important;height:auto!important}
+.tg{display:flex;gap:8px;align-items:center;min-height:44px;font-size:15px;margin-right:10px}.tg input{width:20px;height:20px;accent-color:var(--acc)}
+a.chip{text-decoration:none}
+@media(max-width:900px){#m2{grid-template-columns:minmax(0,1fr)}#m2>div:first-child{position:static}}
 @media(max-width:900px){main{grid-template-columns:minmax(0,1fr)}.fig{position:static}.fig svg{max-height:none}}
 @media(prefers-reduced-motion:no-preference){#cap,#ndl,#arw{transition:transform .35s cubic-bezier(.3,.8,.3,1)}}
 </style>
@@ -78,11 +93,11 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}th,td{p
 <body>
 <header class="band" style="padding-bottom:6px;max-width:1240px;margin:0 auto">
   <h1>Kompass lernen mit dem Suunto MC-2</h1>
-  <p>Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.</p>
+  <p id="sub">Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.</p>
   <nav class="scroll" id="mods" aria-label="Module"></nav>
 </header>
 
-<main class="band">
+<main class="band" id="m1">
   <div class="fig"><svg id="sv" viewBox="0 0 400 905" role="img" aria-label="Suunto MC-2 Spiegelkompass, aufgeklappt, mit nummerierten Teilen"></svg></div>
 
   <section>
@@ -173,6 +188,72 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}th,td{p
     </div>
 
     <p class="note">Schematische Darstellung nach Gerätefoto und Suunto-Anleitung (Abschnitt Compass Anatomy), nicht massstäblich. Nummern 1–11 wie in der Anleitung; 12–15 sind weitere Merkmale des MC-2.</p>
+  </section>
+</main>
+
+<main class="band" id="m2" hidden>
+  <div>
+    <div class="mapbox" id="mapbox">
+      <div id="mapRot"><div id="lmap"></div>
+        <svg id="miniC" viewBox="0 0 120 200" aria-hidden="true">
+          <rect x="8" y="8" width="104" height="184" rx="8" fill="rgba(255,255,255,.55)" stroke="#5c666c"/>
+          <path d="M60 14 L68 30 L52 30Z" fill="#d42a20"/>
+          <circle cx="60" cy="95" r="50" fill="#ebe5d4" stroke="#9c9585"/><circle cx="60" cy="95" r="42" fill="#1d1d1d"/>
+          <circle cx="60" cy="95" r="35" fill="rgba(246,246,242,.92)"/>
+          <g stroke="#d42a20" stroke-width="1"><line x1="44" y1="66" x2="44" y2="124"/><line x1="76" y1="66" x2="76" y2="124"/><line x1="52" y1="61" x2="52" y2="129"/><line x1="68" y1="61" x2="68" y2="129"/></g>
+          <path d="M55 108 V76 L60 68 L65 76 V108Z" fill="none" stroke="#d42a20" stroke-width="2"/>
+          <text x="60" y="58" text-anchor="middle" font-size="8" font-weight="700" fill="#f2f2ee" font-family="Barlow">N</text>
+          <rect x="58.5" y="40" width="3" height="5" fill="#1b1b1b"/>
+        </svg>
+      </div>
+      <svg id="ndl2" viewBox="-50 -50 100 100" aria-hidden="true"><path d="M-3.5 0 L0 -40 L3.5 0Z" fill="#d42a20"/><path d="M-3.5 0 L0 40 L3.5 0Z" fill="#2b2b2b"/><circle r="3.5" fill="#333" stroke="#b9a46a" stroke-width="1.2"/></svg>
+      <div class="mapbadge" id="mbadge"></div>
+    </div>
+    <p class="note">Kartendaten © swisstopo (Landeskarte, Web-Dienst WMTS). Gitter LV95 und Meridian berechnet mit den Näherungsformeln von swisstopo. Der Bildschirm oben steht für Norden im Gelände.</p>
+  </div>
+
+  <section>
+    <div class="card">
+      <h2>Karte einnorden</h2>
+      <p style="margin:8px 0 0">Die Karte liegt verdreht vor dir. Der Kompass ist auf 0° gestellt und liegt parallel zu den Gitterlinien. Dreh die Karte samt Kompass, bis die Nadel im Nordpfeil liegt.</p>
+      <div class="ctl"><label for="rM">Karte drehen <b id="oM"></b></label>
+        <input type="range" id="rM" min="-180" max="180" step="1"><button class="btn" data-m="-1">−1°</button><button class="btn" data-m="1">+1°</button></div>
+      <div class="stat" id="mst"></div>
+      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mZin">Zoom +</button><button class="btn" id="mZout">Zoom −</button></div>
+      <div class="row">
+        <label class="tg"><input type="checkbox" id="tGrid" checked> Gitterlinien LV95</label>
+        <label class="tg"><input type="checkbox" id="tMer"> Meridian (geografisch Nord)</label>
+        <label class="tg"><input type="checkbox" id="tCmp" checked> Kompass</label>
+        <label class="tg"><input type="checkbox" id="tLive"> Live: iPhone hält die Karte eingenordet</label>
+      </div>
+      <p class="warn" id="mMsg"></p>
+    </div>
+
+    <div class="card">
+      <h3>So gehst du vor</h3>
+      <ol class="field">
+        <li>Ring auf 0° stellen: N steht am Ableseindex.</li>
+        <li>Kompass mit der Längskante oder den Nordlinien parallel zu einer senkrechten Gitterlinie auf die Karte legen, Marschrichtungspfeil zum oberen Kartenrand.</li>
+        <li>Karte und Kompass zusammen drehen, bis die rote Nadel im Nordpfeil liegt: Rot in Rot.</li>
+        <li>Jetzt liegt alles auf der Karte so wie im Gelände. Was auf der Karte rechts von dir ist, liegt auch draussen rechts.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>Drei Nordrichtungen in Winterthur</h3>
+      <table class="stack"><thead><tr><th>Nordrichtung</th><th>Bezug</th><th>Abweichung</th></tr></thead><tbody id="northTab"></tbody></table>
+      <p class="note">Für das Einnorden im Gelände sind diese Abweichungen meist vernachlässigbar: 1° Fehler ergibt rund 17 m seitliche Abweichung pro km. Wann man sie berücksichtigen muss, zeigt Modul 4.</p>
+    </div>
+
+    <div class="card">
+      <h3>Feldübung</h3>
+      <ol class="field">
+        <li>Nimm die Landeskarte 1:25 000 von Winterthur oder öffne den gleichen Ausschnitt in der swisstopo-App und schalte dort die Drehung ab.</li>
+        <li>Norde die Karte mit dem MC-2 ein wie oben beschrieben.</li>
+        <li>Suche drei markante Punkte im Gelände (Kirchturm, Hügel, Hochhaus) und finde sie auf der Karte, ohne die Karte nochmals zu drehen.</li>
+        <li>Vergleich: Schalte hier «Live» ein und halte das iPhone flach. Liegt die Karte gleich wie deine Papierkarte?</li>
+      </ol>
+    </div>
   </section>
 </main>
 
@@ -319,7 +400,8 @@ document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>
 $('newTask').addEventListener('click',()=>{S.T=5*(2+Math.floor(Math.random()*68));draw()});
 $('tEx').addEventListener('click',()=>setMode('ex'));$('tLv').addEventListener('click',()=>setMode('lv'));$('tQz').addEventListener('click',()=>setMode('qz'));
 $('qGo').addEventListener('click',qStart);
-$('mods').innerHTML=MODS.map((m,i)=>`<span class="chip${i?'':' on'}">${i+1} ${m}${i?'<small>folgt</small>':''}</span>`).join('');
+const LINKS={0:'aufbau',1:'karte'};
+$('mods').innerHTML=MODS.map((m,i)=>LINKS[i]!==undefined?`<a class="chip" href="#${LINKS[i]}" data-mod="${LINKS[i]}">${i+1} ${m}</a>`:`<span class="chip">${i+1} ${m}<small>folgt</small></span>`).join('');
 /* ---------- Live-Sensoren ---------- */
 const L={got:false,hx:0,hy:0,n:0,acc:null,beta:null,gamma:null,samples:null,raf:0,held:null,geo:null,cmp:[]};
 try{const v=JSON.parse(localStorage.getItem('mc2-cmp')||'[]');if(Array.isArray(v))L.cmp=v.filter(r=>typeof r.m==='number'&&typeof r.i==='number').slice(-30)}catch(e){}
@@ -336,7 +418,7 @@ function onOri(e){
 function tilt(){if(L.beta===null)return null;const b=L.beta*Math.PI/180,g=L.gamma*Math.PI/180;return Math.acos(Math.max(-1,Math.min(1,Math.cos(b)*Math.cos(g))))*180/Math.PI}
 function tiltText(t){return t<30?'unter 30°: kein Lawinenhang im Sinne der Faustregel':t<35?'30–35°: Lawinenhang, ab hier zählt die Steilheit':t<40?'35–40°: steil':t<45?'40–45°: sehr steil':'über 45°: extrem steil'}
 function liveDraw(){
-  L.raf=0;
+  L.raf=0;if(typeof m2Live==='function')m2Live();
   if(L.got){const h=heading();$('lvH').textContent=Math.round(h)%360+'°';
     $('lvAcc').textContent=typeof L.acc==='number'&&L.acc>=0?`Genauigkeit laut iPhone ±${Math.round(L.acc)}°${L.acc>15?' – Kalibrierung nötig: iPhone in einer Acht bewegen':''}`:'Genauigkeit nicht gemeldet';
     if($('lvFollow').checked&&S.mode==='lv'){const v=Math.round(h)%360;if(v!==S.H){S.H=v;draw()}}}
@@ -358,7 +440,7 @@ function cmpRender(){
   if(!L.cmp.length){$('cmpOut').innerHTML='';return}
   const d=L.cmp.map(r=>norm(r.i-r.m)),m=d.reduce((a,b)=>a+b,0)/d.length,sd=d.length>1?Math.sqrt(d.reduce((a,b)=>a+(b-m)**2,0)/(d.length-1)):0;
   $('cmpOut').innerHTML=`<table><thead><tr><th>Nr</th><th>MC-2</th><th>iPhone</th><th>Δ iPhone − MC-2</th></tr></thead><tbody>${L.cmp.map((r,k)=>`<tr><td>${k+1}</td><td>${r.m}°</td><td>${r.i}°</td><td>${d[k]>0?'+':''}${d[k]}°</td></tr>`).join('')}</tbody></table>
-  <p class="note">Mittel ${m>0?'+':''}${m.toFixed(1)}°${d.length>1?`, Streuung ±${sd.toFixed(1)}°`:''} (n = ${d.length}). Ein gleichbleibender Versatz von wenigen Grad spricht dafür, dass einer der beiden auf geografisch Nord bezogen ist (Deklination, Modul 4). Grosse Streuung deutet auf Störungen oder ein unkalibriertes iPhone.</p>`;
+  <p class="note">Mittel ${m>0?'+':''}${m.toFixed(1)}°${d.length>1?`, Streuung ±${sd.toFixed(1)}°`:''} (n = ${d.length}). Erwartung bei Deklination 0° am MC-2: Versatz nahe 0°, denn Safari liefert nach den verfügbaren Quellen magnetisch Nord. Ein gleichbleibender Versatz in der Grösse der Deklination (wenige Grad Ost) würde auf geografisch Nord hindeuten. Grosse Streuung deutet auf Störungen oder ein unkalibriertes iPhone.</p>`;
 }
 function cmpGo(){
   const mv=+$('cmpIn').value;
@@ -390,6 +472,63 @@ $('tiltHold').addEventListener('click',()=>{const t=tilt();$('tiltHeld').textCon
 $('geoGo').addEventListener('click',geoGo);
 $('geoCopy').addEventListener('click',()=>{if(L.geo&&navigator.clipboard)navigator.clipboard.writeText(L.geo).then(()=>{$('geoCopy').textContent='Kopiert'},()=>{$('geoCopy').textContent='Nicht möglich'})});
 cmpRender();
+/* ---------- Modul 2: Karte einnorden (Winterthur) ---------- */
+const LF=window.L,C0=[47.5002,8.7239];
+function wgs(E,N){const y=(E-2600000)/1e6,x=(N-1200000)/1e6;
+  const lo=2.6779094+4.728982*y+0.791484*y*x+0.1306*y*x*x-0.0436*y*y*y;
+  const la=16.9023892+3.238272*x-0.270978*y*y-0.002528*x*x-0.0447*y*y*x-0.014*x*x*x;return[la*100/36,lo*100/36]}
+const [E0,N0]=lv95(C0[0],C0[1]);
+const conv=(()=>{const p=wgs(E0,N0+2000);return Math.atan2((p[1]-C0[1])*Math.cos(C0[0]*Math.PI/180),p[0]-C0[0])*180/Math.PI})();
+const M={map:null,theta:0,grid:null,mer:null,z:15};
+let m2Live=null;
+function m2Init(){
+  if(M.map||!LF){if(!LF)$('mMsg').textContent='Die Kartenbibliothek konnte nicht geladen werden (offline?).';return}
+  M.map=LF.map('lmap',{center:C0,zoom:M.z,zoomControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,attributionControl:false});
+  LF.tileLayer('https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg',{maxZoom:18,minZoom:7}).on('tileerror',()=>{$('mMsg').textContent='Kartenkacheln von swisstopo konnten nicht geladen werden.'}).addTo(M.map);
+  const g=[],eA=Math.floor(E0/1000)*1000,nA=Math.floor(N0/1000)*1000;
+  for(let k=-5;k<=5;k++){const E=eA+k*1000,N=nA+k*1000,a=[],b=[];
+    for(let t=-5000;t<=5000;t+=500){a.push(wgs(E,nA+t));b.push(wgs(eA+t,N))}
+    g.push(LF.polyline(a,{color:'#1f5fbf',weight:1.3,opacity:.85,interactive:false}),LF.polyline(b,{color:'#1f5fbf',weight:1.3,opacity:.85,interactive:false}));
+    const fE=String(E/1000).replace(/^(\d)(\d{3})$/,"$1'$2"),fN=String(N/1000).replace(/^(\d)(\d{3})$/,"$1'$2");
+    g.push(LF.marker(wgs(E+40,N0-700),{icon:LF.divIcon({className:'glab',html:fE,iconAnchor:[0,8]}),interactive:false}),LF.marker(wgs(E0-700,N+40),{icon:LF.divIcon({className:'glab',html:fN,iconAnchor:[0,16]}),interactive:false}))}
+  M.grid=LF.layerGroup(g).addTo(M.map);
+  M.mer=LF.polyline([[C0[0]-.06,C0[1]],[C0[0]+.06,C0[1]]],{color:'#111',weight:1.6,dashArray:'6 5',interactive:false});
+  $('northTab').innerHTML=`<tr><td data-l="Nordrichtung">Geografisch Nord</td><td data-l="Bezug">Meridian, Richtung Nordpol</td><td data-l="Abweichung">0°</td></tr>
+  <tr><td data-l="Nordrichtung">Gitternord</td><td data-l="Bezug">senkrechte Linien der Landeskarte (LV95)</td><td data-l="Abweichung">${conv>0?'+':''}${conv.toFixed(2)}° (${conv>0?'östlich':'westlich'})</td></tr>
+  <tr><td data-l="Nordrichtung">Magnetisch Nord</td><td data-l="Bezug">wohin die Kompassnadel zeigt</td><td data-l="Abweichung">wenige Grad östlich, genauer Wert in Modul 4</td></tr>`;
+  m2New();
+}
+function needleA(){return $('tLive').checked&&L.got?-heading():0}
+function m2Draw(){
+  if(!M.map)return;
+  $('mapRot').style.transform=`rotate(${M.theta}deg)`;
+  $('miniC').style.transform=`rotate(${conv}deg)`;
+  $('miniC').style.display=$('tCmp').checked?'':'none';
+  const nA=needleA();$('ndl2').style.transform=`rotate(${nA}deg)`;
+  $('rM').value=Math.round(norm(M.theta));$('oM').textContent=Math.round(norm(M.theta))+'°';
+  $('mbadge').textContent=`Winterthur · Zoom ${M.map.getZoom()}`;
+  const e=norm(M.theta+conv-nA),ok=Math.abs(e)<=2,st=$('mst');st.classList.toggle('good',ok);
+  st.innerHTML=$('tLive').checked?`<span class="big">${L.got?Math.round(heading())+'°':'–'}</span><span>${L.got?'Live: Die Karte dreht gegen dein iPhone und bleibt so eingenordet.':'Live braucht aktive Sensoren: Modul 1 › Live mit iPhone › Sensoren aktivieren.'}</span>`
+   :`<span class="big">${ok?'0°':Math.abs(Math.round(e))+'°'}</span><span>${ok?'Eingenordet: Rot in Rot. Kartennord zeigt nach Norden.':'Noch '+Math.abs(Math.round(e))+'° daneben. Karte '+(e>0?'nach links':'nach rechts')+' drehen.'}</span>`;
+}
+function m2New(){M.theta=(Math.random()<.5?-1:1)*(40+Math.floor(Math.random()*130));m2Draw()}
+m2Live=()=>{if(M.map&&$('tLive').checked&&!$('m2').hidden){M.theta=norm(-heading()-conv);m2Draw()}};
+$('rM').addEventListener('input',e=>{if($('tLive').checked)$('tLive').checked=false;M.theta=+e.target.value;m2Draw()});
+document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{$('tLive').checked=false;M.theta=norm(M.theta+ +b.dataset.m);m2Draw()}));
+$('mNew').addEventListener('click',()=>{$('tLive').checked=false;m2New()});
+$('mZin').addEventListener('click',()=>{M.map&&M.map.setZoom(Math.min(18,M.map.getZoom()+1));m2Draw()});
+$('mZout').addEventListener('click',()=>{M.map&&M.map.setZoom(Math.max(12,M.map.getZoom()-1));m2Draw()});
+$('tGrid').addEventListener('change',e=>{if(M.map)e.target.checked?M.grid.addTo(M.map):M.grid.remove()});
+$('tMer').addEventListener('change',e=>{if(M.map)e.target.checked?M.mer.addTo(M.map):M.mer.remove()});
+$('tCmp').addEventListener('change',m2Draw);
+$('tLive').addEventListener('change',()=>{if($('tLive').checked&&!L.got)$('mMsg').textContent='Zuerst in Modul 1 › Live mit iPhone die Sensoren aktivieren.';else $('mMsg').textContent='';m2Live();m2Draw()});
+/* ---------- Navigation ---------- */
+const SUBS={aufbau:'Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.',karte:'Modul 2 von 9: Orientierung auf der Karte. Norde die Landeskarte von Winterthur mit dem Kompass ein und lerne die drei Nordrichtungen kennen.'};
+function route(){const h=location.hash.replace('#','');const k=h==='karte'?'karte':'aufbau';
+  $('m1').hidden=k!=='aufbau';$('m2').hidden=k!=='karte';$('sub').textContent=SUBS[k];
+  document.querySelectorAll('#mods [data-mod]').forEach(a=>a.classList.toggle('on',a.dataset.mod===k));
+  if(k==='karte'){m2Init();if(M.map)setTimeout(()=>{M.map.invalidateSize();m2Draw()},50)}}
+window.addEventListener('hashchange',route);route();
 if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
 draw();
 }
