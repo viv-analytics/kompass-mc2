@@ -251,7 +251,7 @@ a.chip{text-decoration:none}
       <div class="ctl"><label for="rM">Karte drehen <b id="oM"></b></label>
         <input type="range" id="rM" min="-180" max="180" step="1"><button class="btn" data-m="-1">−1°</button><button class="btn" data-m="1">+1°</button></div>
       <div class="stat" id="mst"></div>
-      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mPan">Ausschnitt verschieben</button><button class="btn" id="mZin">Zoom +</button><button class="btn" id="mZout">Zoom −</button></div>
+      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mPan">Ausschnitt verschieben</button><button class="btn" id="mBack" hidden>Zurück ohne Änderung</button><button class="btn" id="mZin">Zoom +</button><button class="btn" id="mZout">Zoom −</button></div>
       <div class="row">
         <label class="tg"><input type="checkbox" id="tGrid" checked> Gitterlinien LV95</label>
         <label class="tg"><input type="checkbox" id="tMer"> Meridian (geografisch Nord)</label>
@@ -647,7 +647,7 @@ function m2Mer(){if(!M.map)return;const c=M.map.getCenter();if(M.mer)M.mer.remov
   <tr><td data-l="Nordrichtung">Gitternord</td><td data-l="Bezug">senkrechte Linien der Landeskarte (LV95)</td><td data-l="Abweichung">${cv>0?'+':''}${cv.toFixed(2)}° (${cv>0?'östlich':'westlich'})</td></tr>
   <tr><td data-l="Nordrichtung">Magnetisch Nord</td><td data-l="Bezug">wohin die Kompassnadel zeigt</td><td data-l="Abweichung">wenige Grad östlich, genauer Wert in Modul 4</td></tr>`}
 function needleA(){return $('tLive').checked&&L.got?-heading():0}
-function setPan(on){M.pan=on;if(!M.map)return;if(on){M.theta=0;$('tLive').checked=false;M.map.dragging.enable();M.map.touchZoom.enable();$('mPan').textContent='Übung starten';$('mPan').classList.add('pri')}else{M.map.dragging.disable();M.map.touchZoom.disable();$('mPan').textContent='Ausschnitt verschieben';$('mPan').classList.remove('pri')}m2Draw()}
+function setPan(on){M.pan=on;if(!M.map)return;$('mBack').hidden=!on;$('mNew').hidden=on;if(on){M.prev={c:M.map.getCenter(),z:M.map.getZoom(),t:M.theta};M.theta=0;$('tLive').checked=false;M.map.dragging.enable();M.map.touchZoom.enable();$('mPan').textContent='Übung starten';$('mPan').classList.add('pri')}else{M.map.dragging.disable();M.map.touchZoom.disable();$('mPan').textContent='Ausschnitt verschieben';$('mPan').classList.remove('pri')}m2Draw()}
 function m2Draw(){
   if(!M.map||!SH.sel)return;
   const conv=curConv();
@@ -658,7 +658,7 @@ function m2Draw(){
   $('rM').value=Math.round(norm(M.theta));$('oM').textContent=Math.round(norm(M.theta))+'°';$('rM').disabled=M.pan;
   $('mbadge').textContent=`LK${SH.sel.scale} ${SH.sel.nr} ${SH.sel.name} · Zoom ${M.map.getZoom()}`;
   const st=$('mst');
-  if(M.pan){st.classList.remove('good');st.innerHTML='<span>Verschiebe die Karte zu einem Ausschnitt, den du im Gelände kennst. Dann «Übung starten».</span>';return}
+  if(M.pan){st.classList.remove('good');st.innerHTML='<span>Verschiebe die Karte zu einem Ausschnitt, den du im Gelände kennst. Dann «Übung starten», oder «Zurück ohne Änderung» für den vorherigen Ausschnitt.</span>';return}
   const e=norm(M.theta+conv-nA),ok=Math.abs(e)<=2;st.classList.toggle('good',ok);
   st.innerHTML=$('tLive').checked?`<span class="big">${L.got?Math.round(heading())+'°':'–'}</span><span>${L.got?'Live: Die Karte dreht gegen dein iPhone und bleibt so eingenordet.':'Live braucht aktive Sensoren: Modul 1 › Live mit iPhone › Sensoren aktivieren.'}</span>`
    :`<span class="big">${ok?'0°':Math.abs(Math.round(e))+'°'}</span><span>${ok?'Eingenordet: Rot in Rot. Kartennord zeigt nach Norden.':'Noch '+Math.abs(Math.round(e))+'° daneben. Karte '+(e>0?'nach links':'nach rechts')+' drehen.'}</span>`;
@@ -669,6 +669,7 @@ document.querySelectorAll('input[name=sc]').forEach(r=>r.addEventListener('chang
 $('shForm').addEventListener('submit',e=>{e.preventDefault();shSearch($('shQ').value)});
 $('shGeo').addEventListener('click',shGeo);
 $('mPan').addEventListener('click',()=>M.pan?m2New():setPan(true));
+$('mBack').addEventListener('click',()=>{const p=M.prev;setPan(false);if(p){M.map.setView(p.c,p.z,{animate:false});M.theta=p.t}m2Draw()});
 $('rM').addEventListener('input',e=>{if($('tLive').checked)$('tLive').checked=false;M.theta=+e.target.value;m2Draw()});
 document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{if(M.pan)return;$('tLive').checked=false;M.theta=norm(M.theta+ +b.dataset.m);m2Draw()}));
 $('mNew').addEventListener('click',()=>{$('tLive').checked=false;m2New()});
