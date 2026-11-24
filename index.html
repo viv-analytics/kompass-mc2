@@ -70,6 +70,9 @@ ol.field{padding-left:20px;margin:8px 0 0}ol.field li{margin:6px 0}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
 .row input[type=number]{font:16px Barlow,sans-serif;width:110px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 table{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}th,td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}th{font-weight:500;color:var(--mut);font-size:13px}th:first-child,td:first-child{text-align:left}
+table.stack{table-layout:fixed}.stack th,.stack td{white-space:normal;overflow-wrap:anywhere;text-align:left;vertical-align:top;padding:8px 6px}
+.stack th:nth-child(1),.stack td:nth-child(1){width:30%}.stack th:nth-child(3),.stack td:nth-child(3){width:30%}
+@media(max-width:600px){.stack thead{display:none}.stack tr{display:grid;padding:8px 0;border-bottom:1px solid var(--line)}.stack td{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:8px;border:0;padding:3px 0;width:auto!important}.stack td::before{content:attr(data-l);color:var(--mut);font-size:13px}}
 .warn{color:var(--acc);font-weight:500}
 .lvl{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--line) 0 33.3%,#f0c419 33.3% 38.9%,#e8862a 38.9% 44.4%,#d42a20 44.4% 50%,#7b2c8f 50% 100%);position:relative;margin-top:10px}
 .lvl i{position:absolute;top:-5px;width:3px;height:20px;background:var(--ink);border-radius:2px;transform:translateX(-50%)}
