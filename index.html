@@ -98,6 +98,10 @@ main[hidden],#m2[hidden]{display:none!important}
 #d3In{font:16px Barlow,sans-serif;width:120px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .tg input[type=number]{font:16px Barlow,sans-serif;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:auto;height:auto}
 .prof{width:100%;height:auto;display:block;margin-top:10px}
+.mapbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;margin-top:10px}
+.mapbar .ctl{flex:1 1 260px;margin:0}.zgrp{display:flex;gap:0}.zgrp .btn{min-width:48px;font-size:20px;line-height:1;padding:0}.zgrp .btn:first-child{border-radius:8px 0 0 8px}.zgrp .btn:last-child{border-radius:0 8px 8px 0;border-left:0}
+.rgrp{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.mapbar[hidden],.rgrp[hidden]{display:none}
 .tg{display:flex;gap:8px;align-items:center;min-height:44px;font-size:15px;margin-right:10px}.tg input{width:20px;height:20px;accent-color:var(--acc)}
 a.chip{text-decoration:none}
 @media(max-width:900px){#m2,#m3{grid-template-columns:minmax(0,1fr)}#m2>div:first-child,#m3>div:first-child{position:static}}
@@ -225,6 +229,11 @@ a.chip{text-decoration:none}
       <div class="mapbadge" id="mbadge" hidden></div>
       <div id="mapEmpty"><div><b>Noch kein Kartenblatt gewählt</b><br>Gib rechts die Nummer oder den Namen deiner Landeskarte ein.</div></div>
     </div>
+    <div class="mapbar" id="mbar2">
+      <div class="ctl mrot"><label for="rM">Karte drehen <b id="oM"></b></label>
+        <input type="range" id="rM" min="-180" max="180" step="1"><button class="btn" data-m="-1" aria-label="1 Grad links drehen">−1°</button><button class="btn" data-m="1" aria-label="1 Grad rechts drehen">+1°</button></div>
+      <div class="zgrp"><button class="btn" id="mZout" aria-label="Verkleinern">−</button><button class="btn" id="mZin" aria-label="Vergrössern">+</button></div>
+    </div>
     <p class="note">Kartendaten und Blatteinteilung © swisstopo (Landeskarte, WMTS und Geodienste-API). Gitter LV95 und Meridian berechnet mit den Näherungsformeln von swisstopo. Der Bildschirm oben steht für Norden im Gelände.</p>
   </div>
 
@@ -248,10 +257,8 @@ a.chip{text-decoration:none}
     <div class="card" id="exCard" hidden>
       <h2>Karte einnorden</h2>
       <p style="margin:8px 0 0">Die Karte liegt verdreht vor dir. Der Kompass ist auf 0° gestellt und liegt parallel zu den Gitterlinien. Dreh die Karte samt Kompass, bis die Nadel im Nordpfeil liegt.</p>
-      <div class="ctl"><label for="rM">Karte drehen <b id="oM"></b></label>
-        <input type="range" id="rM" min="-180" max="180" step="1"><button class="btn" data-m="-1">−1°</button><button class="btn" data-m="1">+1°</button></div>
       <div class="stat" id="mst"></div>
-      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mPan">Ausschnitt verschieben</button><button class="btn" id="mBack" hidden>Zurück ohne Änderung</button><button class="btn" id="mZin">Zoom +</button><button class="btn" id="mZout">Zoom −</button></div>
+      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mPan">Ausschnitt verschieben</button><button class="btn" id="mBack" hidden>Zurück ohne Änderung</button></div>
       <div class="row">
         <label class="tg"><input type="checkbox" id="tGrid" checked> Gitterlinien LV95</label>
         <label class="tg"><input type="checkbox" id="tMer"> Meridian (geografisch Nord)</label>
@@ -297,6 +304,10 @@ a.chip{text-decoration:none}
       <div class="mapbadge" id="mbadge3" hidden></div>
       <div id="mapEmpty3" class="mapEmpty"><div><b>Noch kein Kartenblatt gewählt</b><br>Wähle dein Blatt in <a href="#karte">Modul 2</a>. Es gilt dann für alle Module.</div></div>
     </div>
+    <div class="mapbar" id="mbar3">
+      <div class="zgrp"><button class="btn" id="d3Zout" aria-label="Verkleinern">−</button><button class="btn" id="d3Zin" aria-label="Vergrössern">+</button></div>
+      <div class="rgrp"><button class="btn" id="d3Undo">↶ Letzter Punkt</button><button class="btn" id="d3Clr">Route löschen</button></div>
+    </div>
     <p class="note">Kartendaten, Wanderwege und Höhenmodell © swisstopo. Routen entlang Wegen: BRouter, Wegdaten © OpenStreetMap-Mitwirkende. Distanzen sind horizontal gemessen, wie auf der Karte. Der Massstabsbalken zeigt, wie lang 1 cm deiner Papierkarte hier auf dem Bildschirm ist.</p>
   </div>
 
@@ -326,7 +337,7 @@ a.chip{text-decoration:none}
         </div>
         <label class="tg"><input type="checkbox" id="tWw" checked> Wanderwege einblenden (gelb, rot-weiss, blau-weiss)</label>
         <div id="d3Seg"></div>
-        <div class="row"><button class="btn" id="d3Undo">Letzten Punkt entfernen</button><button class="btn" id="d3Clr">Neue Route</button><button class="btn pri" id="d3Prof">Höhenprofil und Gehzeit</button></div>
+        <div class="row"><button class="btn pri" id="d3Prof">Höhenprofil und Gehzeit</button></div>
         <div id="d3Out"></div>
       </div>
       <div id="d3EstPane" hidden>
@@ -627,7 +638,7 @@ function shGeo(){
 function shPick(x){SH.sel={scale:SH.scale,nr:x.nr,name:x.name,bbox:x.bbox,year:x.year};try{localStorage.setItem('mc2-sheet',JSON.stringify(SH.sel))}catch(e){}$('shRes').innerHTML='';m2Setup()}
 function shRender(){
   document.querySelectorAll('input[name=sc]').forEach(r=>r.checked=+r.value===SH.scale);
-  const s=SH.sel;$('exCard').hidden=!s;$('mapEmpty').hidden=!!s;$('mbadge').hidden=!s;
+  const s=SH.sel;$('exCard').hidden=!s;$('mbar2').hidden=!s;$('mapEmpty').hidden=!!s;$('mbadge').hidden=!s;
   $('shSel').innerHTML=s?`<div class="shsel"><b>LK${s.scale} Blatt ${esc(s.nr)} ${esc(s.name)}</b><br><span class="note">E ${kmx(s.bbox[0])}–${kmx(s.bbox[2])} km · N ${kmx(s.bbox[1])}–${kmx(s.bbox[3])} km${s.year?` · neueste Ausgabe bei swisstopo: ${s.year}`:''}</span><div class="row"><button class="btn" id="shClr">Anderes Blatt</button></div></div>`:'';
   if(s)$('shClr').addEventListener('click',()=>{SH.sel=null;try{localStorage.removeItem('mc2-sheet')}catch(e){}shRender();$('shQ').focus()});
 }
@@ -694,7 +705,7 @@ const mfmt=m=>m>=1000?(m/1000).toFixed(2).replace(/\.?0+$/,'')+' km':Math.round(
 const cmfmt=m=>(m/(sden()/100)).toFixed(1)+' cm';
 const hm=min=>{const t=Math.max(5,Math.round(min/5)*5);return t<60?t+' min':Math.floor(t/60)+' h '+String(t%60).padStart(2,'0')+' min'};
 function d3Setup(){
-  const s=SH.sel;$('mapEmpty3').hidden=!!s;$('mbadge3').hidden=!s;
+  const s=SH.sel;$('mapEmpty3').hidden=!!s;$('mbadge3').hidden=!s;$('mbar3').hidden=!s;
   document.querySelectorAll('#scTab td:nth-child(2),#scTab td:nth-child(3)').forEach((td,i)=>td.style.fontWeight=s&&((i%2===0&&s.scale===25)||(i%2===1&&s.scale===50))?'600':'');
   if(!s||!LF)return;
   const key=s.scale+'-'+s.nr;
@@ -817,7 +828,7 @@ function d3Chk(){
   d3Stat();
 }
 function d3Stat(){$('d3Stat').textContent=D3.stat.n?`Bisher ${D3.stat.n} ${D3.stat.n===1?'Schätzung':'Schätzungen'}, mittlere Abweichung ${(D3.stat.sum/D3.stat.n).toFixed(0)} %.`:''}
-function d3Mode(m){D3.mode=m;$('d3Mess').setAttribute('aria-pressed',m==='mess');$('d3Est').setAttribute('aria-pressed',m==='est');$('d3MessPane').hidden=m!=='mess';$('d3EstPane').hidden=m!=='est';
+function d3Mode(m){D3.mode=m;document.querySelector('#mbar3 .rgrp').hidden=m!=='mess';$('d3Mess').setAttribute('aria-pressed',m==='mess');$('d3Est').setAttribute('aria-pressed',m==='est');$('d3MessPane').hidden=m!=='mess';$('d3EstPane').hidden=m!=='est';
   if(m==='est'){if(D3.route)D3.route.remove();D3.marks.forEach(x=>x.remove());if(!D3.task)d3New()}else{D3.ab.forEach(x=>x.remove());D3.ab=[];D3.task=null;d3Draw()}}
 /* Schrittmassstab */
 function psCalc(){
@@ -837,7 +848,9 @@ $('d3Mess').addEventListener('click',()=>d3Mode('mess'));$('d3Est').addEventList
 $('d3Undo').addEventListener('click',()=>{D3.pts.pop();$('d3Out').innerHTML='';d3Draw()});
 document.querySelectorAll('input[name=rt]').forEach(r=>r.addEventListener('change',()=>{$('d3Out').innerHTML='';d3Draw();d3Legs()}));
 $('tWw').addEventListener('change',e=>{if(D3.ww&&D3.map)e.target.checked?D3.ww.addTo(D3.map):D3.ww.remove()});
-$('d3Clr').addEventListener('click',d3Clear);$('d3Prof').addEventListener('click',d3Prof);
+$('d3Clr').addEventListener('click',d3Clear);
+$('d3Zin').addEventListener('click',()=>{D3.map&&D3.map.setZoom(Math.min(18,D3.map.getZoom()+1))});
+$('d3Zout').addEventListener('click',()=>{D3.map&&D3.map.setZoom(Math.max(11,D3.map.getZoom()-1))});$('d3Prof').addEventListener('click',d3Prof);
 $('d3New').addEventListener('click',d3New);$('d3Chk').addEventListener('click',d3Chk);
 $('d3In').addEventListener('keydown',e=>{if(e.key==='Enter')d3Chk()});
 ['psD','psN','psCv'].forEach(id=>$(id).addEventListener('input',psCalc));
