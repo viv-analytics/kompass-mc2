@@ -308,7 +308,7 @@ a.chip{text-decoration:none}
       <div class="zgrp"><button class="btn" id="d3Zout" aria-label="Verkleinern">−</button><button class="btn" id="d3Zin" aria-label="Vergrössern">+</button></div>
       <div class="rgrp"><button class="btn" id="d3Undo">↶ Letzter Punkt</button><button class="btn" id="d3Clr">Route löschen</button></div>
     </div>
-    <p class="note" id="d3Hint" style="margin:6px 0 0">Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.</p>
+    <p class="note" id="d3Hint" style="margin:6px 0 0">Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit Mausrad, − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.</p>
     <p class="note">Kartendaten, Wanderwege und Höhenmodell © swisstopo. Routen entlang Wegen: BRouter, Wegdaten © OpenStreetMap-Mitwirkende. Distanzen sind horizontal gemessen, wie auf der Karte. Der Massstabsbalken zeigt, wie lang 1 cm deiner Papierkarte hier auf dem Bildschirm ist.</p>
   </div>
 
@@ -646,7 +646,7 @@ function shRender(){
 function m2Setup(){
   shRender();const s=SH.sel;if(!s)return;
   if(!LF){$('mMsg').textContent='Die Kartenbibliothek konnte nicht geladen werden (offline?).';return}
-  if(!M.map){M.map=LF.map('lmap',{zoomControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,attributionControl:false});M.map.on('moveend zoomend',()=>{m2Mer();m2Draw()})}
+  if(!M.map){M.map=LF.map('lmap',{zoomControl:false,dragging:false,scrollWheelZoom:'center',wheelPxPerZoomLevel:90,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,attributionControl:false});M.map.on('moveend zoomend',()=>{m2Mer();m2Draw()})}
   [M.tiles,M.grid,M.frame].forEach(l=>l&&l.remove());
   {const[a0,b0,a1,b1]=s.bbox;M.map.setMaxBounds(null);M.map.setView(wgs((a0+a1)/2,(b0+b1)/2),s.scale===25?14:13,{animate:false})}
   M.tiles=LF.tileLayer(`https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe-pk${s.scale}.noscale/default/current/3857/{z}/{x}/{y}.jpeg`,{maxZoom:18,minZoom:11}).on('tileerror',()=>{$('mMsg').textContent='Kartenkacheln von swisstopo konnten nicht geladen werden.'}).addTo(M.map);
@@ -710,7 +710,7 @@ function d3Setup(){
   document.querySelectorAll('#scTab td:nth-child(2),#scTab td:nth-child(3)').forEach((td,i)=>td.style.fontWeight=s&&((i%2===0&&s.scale===25)||(i%2===1&&s.scale===50))?'600':'');
   if(!s||!LF)return;
   const key=s.scale+'-'+s.nr;
-  if(!D3.map){D3.map=LF.map('map3',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,boxZoom:false,doubleClickZoom:false});D3.map.on('click',d3Click);D3.map.on('zoomend moveend resize',d3Bar)}
+  if(!D3.map){D3.map=LF.map('map3',{zoomControl:false,attributionControl:false,scrollWheelZoom:true,wheelPxPerZoomLevel:90,boxZoom:false,doubleClickZoom:false});D3.map.on('click',d3Click);D3.map.on('zoomend moveend resize',d3Bar)}
   if(D3.key===key){setTimeout(()=>{D3.map.invalidateSize();d3Bar()},50);return}
   D3.key=key;D3.layers.forEach(l=>l.remove());D3.layers=[];d3Clear();d3ClearTask();
   const[x0,y0,x1,y1]=s.bbox;D3.map.setMaxBounds(null);D3.map.setView(wgs((x0+x1)/2,(y0+y1)/2),s.scale===25?14:13,{animate:false});
@@ -829,7 +829,7 @@ function d3Chk(){
   d3Stat();
 }
 function d3Stat(){$('d3Stat').textContent=D3.stat.n?`Bisher ${D3.stat.n} ${D3.stat.n===1?'Schätzung':'Schätzungen'}, mittlere Abweichung ${(D3.stat.sum/D3.stat.n).toFixed(0)} %.`:''}
-function d3Mode(m){D3.mode=m;$('d3Hint').textContent=m==='mess'?'Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.':'Ausschnitt wählen: Karte ziehen und zoomen. «Neue Aufgabe» setzt A und B in den sichtbaren Ausschnitt.';document.querySelector('#mbar3 .rgrp').hidden=m!=='mess';$('d3Mess').setAttribute('aria-pressed',m==='mess');$('d3Est').setAttribute('aria-pressed',m==='est');$('d3MessPane').hidden=m!=='mess';$('d3EstPane').hidden=m!=='est';
+function d3Mode(m){D3.mode=m;$('d3Hint').textContent=m==='mess'?'Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit Mausrad, − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.':'Ausschnitt wählen: Karte ziehen und zoomen. «Neue Aufgabe» setzt A und B in den sichtbaren Ausschnitt.';document.querySelector('#mbar3 .rgrp').hidden=m!=='mess';$('d3Mess').setAttribute('aria-pressed',m==='mess');$('d3Est').setAttribute('aria-pressed',m==='est');$('d3MessPane').hidden=m!=='mess';$('d3EstPane').hidden=m!=='est';
   if(m==='est'){if(D3.route)D3.route.remove();D3.marks.forEach(x=>x.remove());if(!D3.task)d3New()}else{D3.ab.forEach(x=>x.remove());D3.ab=[];D3.task=null;d3Draw()}}
 /* Schrittmassstab */
 function psCalc(){
