@@ -1,4 +1,6 @@
-# Kompass lernen – Suunto MC-2
+# Nordwärts
+
+Karte und Kompass in der Schweiz, mit dem Suunto MC-2.
 
 Interaktive Web-App zum Erlernen des Suunto MC-2 Spiegelkompass, Referenzraum Schweiz.
 

@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kompass lernen – MC-2</title>
+<title>Nordwärts – Kompass mit dem MC-2</title>
 <meta name="theme-color" content="#d42a20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Kompass">
+<meta name="apple-mobile-web-app-title" content="Nordwärts">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -29,7 +29,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Barlow,system
 h1,h2,h3{font-family:"Barlow Condensed",Barlow,sans-serif;line-height:1.05;margin:0;text-wrap:balance}
 h1{font-size:clamp(32px,4.4vw,48px)}h2{font-size:26px}h3{font-size:18px;margin-bottom:4px}
 .band{padding:clamp(20px,3.5vw,44px) max(5vw,16px)}
-header p{color:var(--mut);max-width:62ch;margin:.5em 0 0}
+header p{color:var(--mut);max-width:62ch;margin:.5em 0 0}header .tagline{color:var(--ink);font:600 clamp(18px,2vw,22px)/1.25 "Barlow Condensed",Barlow,sans-serif;margin:.2em 0 0;letter-spacing:.01em}
 .scroll{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;scrollbar-width:thin}
 .chip{flex:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px;color:var(--mut);background:transparent;white-space:nowrap}
 .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -113,7 +113,8 @@ a.chip{text-decoration:none}
 </head>
 <body>
 <header class="band" style="padding-bottom:6px;max-width:1240px;margin:0 auto">
-  <h1>Kompass lernen mit dem Suunto MC-2</h1>
+  <h1>Nordwärts</h1>
+  <p class="tagline">Karte und Kompass in der Schweiz, mit dem Suunto MC-2</p>
   <p id="sub">Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.</p>
   <nav class="scroll" id="mods" aria-label="Module"></nav>
 </header>

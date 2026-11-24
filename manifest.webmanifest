@@ -1,6 +1,6 @@
 {
-  "name": "Kompass lernen – Suunto MC-2",
-  "short_name": "Kompass",
+  "name": "Nordwärts – Karte und Kompass mit dem Suunto MC-2",
+  "short_name": "Nordwärts",
   "lang": "de-CH",
   "start_url": "./",
   "scope": "./",
