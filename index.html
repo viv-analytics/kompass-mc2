@@ -94,8 +94,8 @@ main[hidden],#m2[hidden]{display:none!important}
 .shsel{margin-top:12px;padding:10px 12px;border-radius:8px;background:light-dark(#f2f2ee,#222527)}
 #map3{position:absolute;inset:0;background:#e9ede4}
 #sbar{position:absolute;left:10px;bottom:10px;z-index:700;overflow:visible;pointer-events:none}
-.ptlab{font:700 12px Barlow,sans-serif;color:#fff;background:#d42a20;border-radius:50%;width:22px!important;height:22px!important;display:grid;place-items:center;border:2px solid #fff}
-.ptlab.ab{background:#1b1b1b}
+.ptlab{font:700 12px Barlow,sans-serif;color:#0b2a0b;background:#39ff14;border-radius:50%;width:22px!important;height:22px!important;display:grid;place-items:center;border:2px solid #fff}
+.ptlab.ab{background:#1b1b1b;color:#fff}.ptlab{border-color:#0b3d0b!important}
 #d3In{font:16px Barlow,sans-serif;width:120px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .tg input[type=number]{font:16px Barlow,sans-serif;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:auto;height:auto}
 .prof{width:100%;height:auto;display:block;margin-top:10px}
@@ -233,7 +233,7 @@ a.chip{text-decoration:none}
     <div class="mapbar" id="mbar2">
       <div class="ctl mrot"><label for="rM">Karte drehen <b id="oM"></b></label>
         <input type="range" id="rM" min="-180" max="180" step="1"><button class="btn" data-m="-1" aria-label="1 Grad links drehen">−1°</button><button class="btn" data-m="1" aria-label="1 Grad rechts drehen">+1°</button></div>
-      <div class="zgrp"><button class="btn" id="mZout" aria-label="Verkleinern">−</button><button class="btn" id="mZin" aria-label="Vergrössern">+</button></div>
+      <div class="zgrp"><button class="btn" id="mZout" aria-label="Verkleinern">−</button><button class="btn" id="mZin" aria-label="Vergrössern">+</button></div><button class="btn" id="mHome">⌖ Blattmitte</button>
     </div>
     <p class="note">Kartendaten und Blatteinteilung © swisstopo (Landeskarte, WMTS und Geodienste-API). Gitter LV95 und Meridian berechnet mit den Näherungsformeln von swisstopo. Der Bildschirm oben steht für Norden im Gelände.</p>
   </div>
@@ -259,7 +259,7 @@ a.chip{text-decoration:none}
       <h2>Karte einnorden</h2>
       <p style="margin:8px 0 0">Die Karte liegt verdreht vor dir. Du kannst sie jederzeit mit der Maus oder dem Finger verschieben und mit dem Mausrad zoomen. Der Kompass ist auf 0° gestellt und liegt parallel zu den Gitterlinien. Dreh die Karte samt Kompass, bis die Nadel im Nordpfeil liegt.</p>
       <div class="stat" id="mst"></div>
-      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mPan">Ausschnitt verschieben</button><button class="btn" id="mBack" hidden>Zurück ohne Änderung</button></div>
+      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button></div>
       <div class="row">
         <label class="tg"><input type="checkbox" id="tGrid" checked> Gitterlinien LV95</label>
         <label class="tg"><input type="checkbox" id="tMer"> Meridian (geografisch Nord)</label>
@@ -306,7 +306,7 @@ a.chip{text-decoration:none}
       <div id="mapEmpty3" class="mapEmpty"><div><b>Noch kein Kartenblatt gewählt</b><br>Wähle dein Blatt in <a href="#karte">Modul 2</a>. Es gilt dann für alle Module.</div></div>
     </div>
     <div class="mapbar" id="mbar3">
-      <div class="zgrp"><button class="btn" id="d3Zout" aria-label="Verkleinern">−</button><button class="btn" id="d3Zin" aria-label="Vergrössern">+</button></div>
+      <div class="zgrp"><button class="btn" id="d3Zout" aria-label="Verkleinern">−</button><button class="btn" id="d3Zin" aria-label="Vergrössern">+</button></div><button class="btn" id="d3Home">⌖ Blattmitte</button>
       <div class="rgrp"><button class="btn" id="d3Undo">↶ Letzter Punkt</button><button class="btn" id="d3Clr">Route löschen</button></div>
     </div>
     <p class="note" id="d3Hint" style="margin:6px 0 0">Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit Mausrad, − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.</p>
@@ -674,7 +674,6 @@ function m2Mer(){if(!M.map)return;const c=M.map.getCenter();if(M.mer)M.mer.remov
   <tr><td data-l="Nordrichtung">Gitternord</td><td data-l="Bezug">senkrechte Linien der Landeskarte (LV95)</td><td data-l="Abweichung">${cv>0?'+':''}${cv.toFixed(2)}° (${cv>0?'östlich':'westlich'})</td></tr>
   <tr><td data-l="Nordrichtung">Magnetisch Nord</td><td data-l="Bezug">wohin die Kompassnadel zeigt</td><td data-l="Abweichung">wenige Grad östlich, genauer Wert in Modul 4</td></tr>`}
 function needleA(){return $('tLive').checked&&L.got?-heading():0}
-function setPan(on){M.pan=on;if(!M.map)return;$('mBack').hidden=!on;$('mNew').hidden=on;if(on){M.prev={c:M.map.getCenter(),z:M.map.getZoom(),t:M.theta};M.theta=0;$('tLive').checked=false;$('mPan').textContent='Übung starten';$('mPan').classList.add('pri')}else{$('mPan').textContent='Ausschnitt verschieben';$('mPan').classList.remove('pri')}m2Draw()}
 function m2Draw(){
   if(!M.map||!SH.sel)return;
   const conv=curConv();
@@ -690,22 +689,21 @@ function m2Draw(){
   st.innerHTML=$('tLive').checked?`<span class="big">${L.got?Math.round(heading())+'°':'–'}</span><span>${L.got?'Live: Die Karte dreht gegen dein iPhone und bleibt so eingenordet.':'Live braucht aktive Sensoren: Modul 1 › Live mit iPhone › Sensoren aktivieren.'}</span>`
    :`<span class="big">${ok?'0°':Math.abs(Math.round(e))+'°'}</span><span>${ok?'Eingenordet: Rot in Rot. Kartennord zeigt nach Norden.':'Noch '+Math.abs(Math.round(e))+'° daneben. Karte '+(e>0?'nach links':'nach rechts')+' drehen.'}</span>`;
 }
-function m2New(){if(M.pan)setPan(false);M.theta=(Math.random()<.5?-1:1)*(40+Math.floor(Math.random()*130));m2Draw()}
+function m2New(){M.theta=(Math.random()<.5?-1:1)*(40+Math.floor(Math.random()*130));m2Draw()}
 m2Live=()=>{if(M.map&&SH.sel&&!M.pan&&$('tLive').checked&&!$('m2').hidden){M.theta=norm(-heading()-curConv());m2Draw()}};
 document.querySelectorAll('input[name=sc]').forEach(r=>r.addEventListener('change',()=>{SH.scale=+r.value;$('shRes').innerHTML='';if(SH.sel&&SH.sel.scale!==SH.scale){SH.sel=null;try{localStorage.removeItem('mc2-sheet')}catch(e){}shRender()}}));
 $('shForm').addEventListener('submit',e=>{e.preventDefault();shSearch($('shQ').value)});
 $('shGeo').addEventListener('click',shGeo);
-$('mPan').addEventListener('click',()=>M.pan?m2New():setPan(true));
-$('mBack').addEventListener('click',()=>{const p=M.prev;setPan(false);if(p){M.map.setView(p.c,p.z,{animate:false});M.theta=p.t}m2Draw()});
 $('rM').addEventListener('input',e=>{if($('tLive').checked)$('tLive').checked=false;M.theta=+e.target.value;m2Draw()});
 document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{if(M.pan)return;$('tLive').checked=false;M.theta=norm(M.theta+ +b.dataset.m);m2Draw()}));
+$('mHome').addEventListener('click',()=>{const s=SH.sel;if(!M.map||!s)return;const b=s.bbox;M.map.setView(wgs((b[0]+b[2])/2,(b[1]+b[3])/2),s.scale===25?14:13)});
 $('mNew').addEventListener('click',()=>{$('tLive').checked=false;m2New()});
 $('mZin').addEventListener('click',()=>{M.map&&M.map.setZoom(Math.min(18,M.map.getZoom()+1))});
 $('mZout').addEventListener('click',()=>{M.map&&M.map.setZoom(Math.max(11,M.map.getZoom()-1))});
 $('tGrid').addEventListener('change',e=>{if(M.grid&&M.map)e.target.checked?M.grid.addTo(M.map):M.grid.remove()});
 $('tMer').addEventListener('change',e=>{if(M.mer&&M.map)e.target.checked?M.mer.addTo(M.map):M.mer.remove()});
 $('tCmp').addEventListener('change',m2Draw);
-$('tLive').addEventListener('change',()=>{if(M.pan)setPan(false);$('mMsg').textContent=$('tLive').checked&&!L.got?'Zuerst in Modul 1 › Live mit iPhone die Sensoren aktivieren.':'';m2Live();m2Draw()});
+$('tLive').addEventListener('change',()=>{$('mMsg').textContent=$('tLive').checked&&!L.got?'Zuerst in Modul 1 › Live mit iPhone die Sensoren aktivieren.':'';m2Live();m2Draw()});
 function m2Init(){shRender();if(SH.sel&&!M.map)m2Setup()}
 /* ---------- Modul 3: Distanz messen ---------- */
 const D3={legs:{},ww:null,map:null,key:null,layers:[],pts:[],route:null,marks:[],task:null,ab:[],mode:'mess',stat:{n:0,sum:0},ps:{a:null}};
@@ -775,12 +773,12 @@ function d3Draw(){
   if(D3.route)D3.route.remove();D3.marks.forEach(m=>m.remove());D3.marks=[];
   const gl=[],seg=[];let tot=0,pend=0,fail=0;
   for(let i=1;i<D3.pts.length;i++){const L=legCoords(i),d=plen(L.c),air=plen([D3.pts[i-1],D3.pts[i]]);tot+=d;if(L.st==='pend')pend++;if(L.st==='fail')fail++;
-    gl.push(LF.polyline(L.c.map(p=>wgs(p[0],p[1])),{color:'#d42a20',weight:3.5,opacity:L.st==='ok'||L.st==='air'?1:.6,dashArray:L.st==='ok'||L.st==='air'?null:'6 6',interactive:false}));seg.push([i,d,tot,air,L.st])}
+    {const ll=L.c.map(p=>wgs(p[0],p[1])),okk=L.st==='ok'||L.st==='air';gl.push(LF.polyline(ll,{color:'#0b3d0b',weight:7,opacity:okk?.85:.5,interactive:false}),LF.polyline(ll,{color:'#39ff14',weight:4,opacity:okk?1:.8,dashArray:okk?null:'6 6',interactive:false}))}seg.push([i,d,tot,air,L.st])}
   D3.route=LF.layerGroup(gl).addTo(D3.map);
   D3.pts.forEach((p,i)=>D3.marks.push(LF.marker(wgs(p[0],p[1]),{icon:LF.divIcon({className:'ptlab',html:String(i+1),iconSize:[22,22]}),interactive:false}).addTo(D3.map)));
   const tr=rtMode()==='trail';
   $('d3Seg').innerHTML=seg.length?`<table><thead><tr><th>Abschnitt</th><th>${tr?'Weg':'Gelände'}</th>${tr?'<th>Luftlinie</th>':''}<th>Karte</th><th>Total</th></tr></thead><tbody>${seg.map(([i,d,t,air,st])=>`<tr><td>${i} → ${i+1}${st==='pend'?' …':st==='fail'?' ⚠':''}</td><td>${mfmt(d)}</td>${tr?`<td>${mfmt(air)}</td>`:''}<td>${cmfmt(d)}</td><td>${mfmt(t)}</td></tr>`).join('')}</tbody></table>
-    <div class="stat" style="margin-top:10px"><span class="big">${mfmt(tot)}</span><span>${tr?'Weglänge, ':''}auf deiner Karte ${cmfmt(tot)} · Gehzeit flach ca. ${hm(tot/1000*15)}</span></div>
+    <div class="stat" style="margin-top:10px"><span class="big">${mfmt(tot)}</span><span>${tr?'Weglänge, ':''}auf deiner Karte ${cmfmt(tot)} · ohne Höhenmeter ${hm(tot/1000*15)}</span></div>
     ${pend?'<p class="note">Route wird entlang der Wege berechnet …</p>':''}${fail?'<p class="warn">⚠ Für markierte Abschnitte fand der Routendienst keinen Weg oder ist nicht erreichbar. Sie zählen als Luftlinie.</p>':''}
     ${tr&&!pend?'<p class="note">Wege aus OpenStreetMap (BRouter, Profil Bergwandern). Sie können von den signalisierten Wanderwegen abweichen. Setze bei Bedarf Zwischenpunkte auf den gewünschten Weg.</p>':''}`
    :`<p class="note">${D3.pts.length?'Noch einen Punkt antippen.':'Noch keine Punkte.'}</p>`;
@@ -790,7 +788,7 @@ function d3Clear(){D3.pts=[];$('d3Out').innerHTML='';if(D3.map)d3Draw();else $('
 async function d3Prof(){
   if(D3.pts.length<2){$('d3Out').innerHTML='<p class="warn">Mindestens zwei Punkte setzen.</p>';return}
   if(rtMode()==='trail'&&[...Array(D3.pts.length-1)].some((_,k)=>legCoords(k+1).st==='pend')){$('d3Out').innerHTML='<p class="warn">Route wird noch berechnet. Gleich nochmals versuchen.</p>';return}
-  let line=d3Line();const tot=plen(line);const st=Math.ceil(line.length/900);if(st>1)line=line.filter((_,i)=>i%st===0||i===line.length-1);
+  let line=d3Line();const tot=plen(line);if(line.length>3000){const st=Math.ceil(line.length/3000);line=line.filter((_,i)=>i%st===0||i===line.length-1)}
   const nb=Math.max(50,Math.min(400,Math.round(tot/15)));
   $('d3Out').innerHTML='<p class="note">Lade Höhenprofil von swisstopo …</p>';
   try{
@@ -798,10 +796,11 @@ async function d3Prof(){
     const r=await fetch(`https://api3.geo.admin.ch/rest/services/profile.json?sr=2056&nb_points=${nb}`,{method:'POST',headers:{'Content-Type':'application/json'},body:geom}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
     const P=(r||[]).map(x=>[+x.dist,+(x.alts&&(x.alts.COMB??x.alts.DTM2??x.alts.DTM25))]).filter(x=>isFinite(x[0])&&isFinite(x[1]));
     if(P.length<2)throw new Error('leer');
-    let up=0,dn=0;for(let i=1;i<P.length;i++){const d=P[i][1]-P[i-1][1];if(d>0)up+=d;else dn-=d}
-    const km=P[P.length-1][0]/1000;
-    const tBfu=15*(km+up/100+dn/200);
-    const th=km/4*60,tv=(up/300+dn/500)*60,tDin=Math.max(th,tv)+Math.min(th,tv)/2;
+    let up=0,dn=0,hu=0,hd=0;const f=tot/Math.max(1,P[P.length-1][0]);
+    for(let i=1;i<P.length;i++){const d=P[i][1]-P[i-1][1],h=(P[i][0]-P[i-1][0])*f;if(d>0){up+=d;hu+=h}else{dn-=d;hd+=h}}
+    const km=tot/1000;
+    const tBfu=15*(km+up/100+dn/200),tB=[15*km,15*up/100,15*dn/200];
+    const din=(h,v)=>Math.max(h,v)+Math.min(h,v)/2,tUp=din(hu/1000/4*60,up/300*60),tDn=din(hd/1000/4*60,dn/500*60),tDin=tUp+tDn;
     const zs=P.map(x=>x[1]),zmin=Math.min(...zs),zmax=Math.max(...zs),W=600,H=170,l=44,b=24,t=10,rr=8;
     const X=d=>l+(W-l-rr)*d/P[P.length-1][0],Y=z=>t+(H-t-b)*(1-(z-zmin)/Math.max(1,zmax-zmin));
     const path=P.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join(' ');
@@ -814,9 +813,9 @@ async function d3Prof(){
       <text x="${l}" y="${H-6}" font-size="11" fill="var(--mut)" font-family="Barlow">0</text>
       <text x="${W-rr}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--mut)" font-family="Barlow">${km.toFixed(2)} km</text></svg>
       <table><thead><tr><th>Grösse</th><th>Wert</th></tr></thead><tbody>
-      <tr><td>Distanz (horizontal)</td><td>${km.toFixed(2)} km</td></tr><tr><td>Aufstieg</td><td>${Math.round(up)} m</td></tr><tr><td>Abstieg</td><td>${Math.round(dn)} m</td></tr>
-      <tr><td><b>Gehzeit Faustregel bfu / Wanderwege</b></td><td><b>${hm(tBfu)}</b></td></tr><tr><td>Gehzeit DIN 33466 (vereinfacht)</td><td>${hm(tDin)}</td></tr></tbody></table>
-      <p class="note">Faustregel bfu/Schweizer Wanderwege: je 15 min pro km, pro 100 m Aufstieg und pro 200 m Abstieg, addiert. DIN 33466: 4 km/h, 300 m/h Aufstieg, 500 m/h Abstieg; kürzere Zeit halbiert und zur längeren addiert, hier über die ganze Route statt abschnittsweise. Beide ohne Pausen. Höhen aus dem swisstopo-Höhenmodell ${rtMode()==='trail'?'entlang der berechneten Route':'entlang der Luftlinie zwischen deinen Punkten, nicht entlang des Wegs'}.</p>`;
+      <tr><td>Weglänge (horizontal)</td><td>${km.toFixed(2)} km</td></tr><tr><td>Aufstieg</td><td>${Math.round(up)} m</td></tr><tr><td>Abstieg</td><td>${Math.round(dn)} m</td></tr>
+      <tr><td><b>Gehzeit Faustregel bfu / Wanderwege</b></td><td><b>${hm(tBfu)}</b></td></tr><tr><td class="note">davon Distanz · Aufstieg · Abstieg</td><td class="note">${hm(tB[0])} · ${hm(tB[1])} · ${hm(tB[2])}</td></tr><tr><td>Gehzeit DIN 33466</td><td>${hm(tDin)}</td></tr><tr><td class="note">davon Aufstiegs- · Abstiegsabschnitte</td><td class="note">${hm(tUp)} · ${hm(tDn)}</td></tr></tbody></table>
+      <p class="note">Faustregel bfu/Schweizer Wanderwege: je 15 min pro km, pro 100 m Aufstieg und pro 200 m Abstieg, addiert. DIN 33466: 4 km/h, 300 m/h Aufstieg, 500 m/h Abstieg; je für Auf- und Abstiegsabschnitte die kürzere Zeit halbiert und zur längeren addiert. Beide ohne Pausen. Höhen aus dem swisstopo-Höhenmodell ${rtMode()==='trail'?'entlang der berechneten Route':'entlang der Luftlinie zwischen deinen Punkten, nicht entlang des Wegs'}.</p>`;
   }catch(e){$('d3Out').innerHTML='<p class="warn">Höhenprofil nicht verfügbar. Internetverbindung prüfen.</p>'}
 }
 function d3ClearTask(){D3.ab.forEach(m=>m.remove());D3.ab=[];D3.task=null;$('d3Fb').innerHTML=''}
@@ -860,6 +859,7 @@ $('d3Undo').addEventListener('click',()=>{D3.pts.pop();$('d3Out').innerHTML='';d
 document.querySelectorAll('input[name=rt]').forEach(r=>r.addEventListener('change',()=>{$('d3Out').innerHTML='';d3Draw();d3Legs()}));
 $('tWw').addEventListener('change',e=>{if(D3.ww&&D3.map)e.target.checked?D3.ww.addTo(D3.map):D3.ww.remove()});
 $('d3Clr').addEventListener('click',d3Clear);
+$('d3Home').addEventListener('click',()=>{const s=SH.sel;if(!D3.map||!s)return;const b=s.bbox;D3.map.setView(wgs((b[0]+b[2])/2,(b[1]+b[3])/2),s.scale===25?14:13)});
 $('d3Zin').addEventListener('click',()=>{D3.map&&D3.map.setZoom(Math.min(18,D3.map.getZoom()+1))});
 $('d3Zout').addEventListener('click',()=>{D3.map&&D3.map.setZoom(Math.max(11,D3.map.getZoom()-1))});$('d3Prof').addEventListener('click',d3Prof);
 $('d3New').addEventListener('click',d3New);$('d3Chk').addEventListener('click',d3Chk);
