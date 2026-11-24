@@ -58,12 +58,25 @@ Sensoren und Standort funktionieren nur über HTTPS. In der claude.ai-Vorschau s
 | Wanderwege | swisstopo WMTS (`ch.swisstopo.swisstlm3d-wanderwege`) | Overlay in Modul 3 | wie oben |
 | Höhenprofil | swisstopo Profil-Dienst (`/rest/services/profile.json`) | Auf-/Abstieg und Profil in Modul 3 | wie oben |
 | Routen entlang Wegen | [BRouter](https://brouter.de), Profil `hiking-mountain` | Weglänge in Modul 3 | Wegdaten © OpenStreetMap-Mitwirkende (ODbL); öffentlicher Server, faire Nutzung |
-| Kartenbibliothek | [Leaflet](https://leafletjs.com) 1.9.4 über cdnjs | Kartendarstellung | BSD-2-Clause |
-| Schrift | Barlow / Barlow Condensed über Google Fonts | Typografie | SIL Open Font License |
+| Kartenbibliothek | [Leaflet](https://leafletjs.com) 1.9.4, selbst ausgeliefert (`lib/`) | Kartendarstellung | BSD-2-Clause, Lizenztext in `lib/LEAFLET-LICENSE.txt` |
+| Schrift | Barlow / Barlow Condensed, selbst ausgeliefert (`fonts/`) | Typografie | SIL Open Font License, Lizenztext in `fonts/OFL.txt` |
 
 swisstopo-Daten sind seit dem 1. März 2021 als Open Government Data frei nutzbar ([swisstopo OGD](https://www.swisstopo.admin.ch/en/free-geodata-ogd)).
 
 Die Kompassgrafik ist eine eigene, schematische Darstellung nach Gerätefoto und Suunto-Anleitung (Abschnitt «Compass Anatomy»). Sie ist nicht massstäblich und kein offizielles Suunto-Material.
+
+**Quellenangaben in der App:** «© swisstopo» steht direkt in beiden Karten. In Modul 3 steht zusätzlich der Hinweis auf BRouter und «© OpenStreetMap-Mitwirkende (ODbL)» mit Link zur OSM-Copyright-Seite.
+
+**Faire Nutzung:** swisstopo-Dienste sind kostenlos, unterliegen aber einer Fair-Use-Regel; Web-Anwendungen mit durchschnittlich 20'000 Nutzerinnen und Nutzern pro Tag gelten noch als faire Nutzung. Der öffentliche BRouter-Server (finanziert vom FOSSGIS e.V.) nennt keine eigenen Nutzungsbedingungen. Bei breiter Nutzung der App sollte das Routing auf eine eigene BRouter-Instanz umgestellt werden.
+
+## Rechtliches und Datenschutz
+
+- Nordwärts ist ein unabhängiges Lernprojekt und nicht mit Suunto verbunden. «Suunto» und «MC-2» werden nur zur Bezeichnung des Geräts verwendet.
+- Kein Backend, keine Konten, kein Tracking. Einstellungen und Messungen bleiben im `localStorage` des Browsers.
+- Sensordaten (Ausrichtung, Neigung) und die GPS-Position für Standort und Schrittmassstab werden nur auf dem Gerät verarbeitet.
+- Der Browser ruft direkt auf: **swisstopo** (Kartenkacheln, Blattsuche, Höhenprofil; bei «Blatt an meinem Standort» mit Koordinaten), **BRouter / brouter.de** (Routenpunkte bei «Entlang Wegen») und **GitHub Pages** (Website). Diese Dienste sehen dabei die IP-Adresse.
+- Schrift und Kartenbibliothek werden von der Website selbst ausgeliefert, es gibt keine Anfragen an Google Fonts oder CDNs.
+- Die gleichen Hinweise stehen in der App unter «Hinweise, Quellen und Datenschutz».
 
 ## Methoden und Formeln
 
@@ -122,7 +135,9 @@ flowchart LR
 | Datei | Zweck |
 |---|---|
 | `index.html` | Gesamte App: Markup, CSS, JavaScript |
-| `sw.js` | Service Worker: eigene Dateien zuerst aus dem Netz, offline aus dem Cache; Leaflet, Schriften und besuchte Kartenkacheln werden zwischengespeichert |
+| `lib/` | Leaflet 1.9.4 mit Lizenz |
+| `fonts/` | Barlow-Schriften mit Lizenz |
+| `sw.js` | Service Worker: eigene Dateien zuerst aus dem Netz, offline aus dem Cache; Leaflet, Schriften und besuchte Kartenkacheln liegen im Offline-Cache |
 | `manifest.webmanifest` | Web-App-Manifest für den Home-Bildschirm |
 | `icon-*.png` | App-Symbole |
 

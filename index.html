@@ -10,18 +10,16 @@
 <meta name="apple-mobile-web-app-title" content="Nordwärts">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="lib/leaflet.css">
+<script src="lib/leaflet.js"></script>
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
 /* VOICE: ruhig, präzise, wie ein gutes Lehrmittel der Alpenclubs – wenig Farbe, feine Linien.
    IDEA: die Seite verhält sich wie die Anleitung zum Gerät: ein grosses Gerätebild mit nummerierten Teilen.
    PICTURE: der MC-2 selbst, aufgeklappt, mit drehbarem Ring und lebender Nadel.
    COLOUR and TYPE: Weiss, Tinte, Kompassrot #d42a20, Ring-Creme; Barlow / Barlow Condensed (DIN-artig wie die Gerätebeschriftung).
    LAYOUT: links Gerät gross, rechts Steuerung und Erklärung; unter 900px gestapelt. */
+@font-face{font-family:Barlow;font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-latin-400-normal.woff2) format('woff2')}@font-face{font-family:Barlow;font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format('woff2')}@font-face{font-family:Barlow;font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-latin-600-normal.woff2) format('woff2')}@font-face{font-family:Barlow;font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}
 :root{color-scheme:light dark;--bg:light-dark(#fbfbf9,#111213);--ink:light-dark(#17191b,#ebebe8);--mut:light-dark(#5d6266,#a3a7aa);--line:light-dark(#dcdcd6,#2d3033);--card:light-dark(#ffffff,#1a1c1e);--plate:light-dark(rgba(214,226,232,.45),rgba(255,255,255,.07));--edge:light-dark(#9aa6ad,#5c666c);--acc:#d42a20;--ok:light-dark(#1f6f4a,#5fc293)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
@@ -85,6 +83,7 @@ main[hidden],#m2[hidden]{display:none!important}
 #miniC{position:absolute;width:120px;height:200px;left:calc(50% - 60px);top:calc(50% - 95px);transform-origin:60px 95px;pointer-events:none;z-index:500}
 #ndl2{position:absolute;width:100px;height:100px;left:calc(50% - 50px);top:calc(50% - 50px);pointer-events:none;z-index:600}
 .mapbox#mapbox{cursor:grab;touch-action:none}.mapbox#mapbox.drag{cursor:grabbing}
+.mapattr{position:absolute;right:0;bottom:0;z-index:700;background:rgba(255,255,255,.85);color:#333;font:11px Barlow,sans-serif;padding:1px 6px;border-top-left-radius:6px}.mapattr a{color:#333}
 .mapbadge{position:absolute;left:10px;top:10px;z-index:700;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:13px;font-weight:600}
 .glab{font:600 11px Barlow,sans-serif;color:#1f5fbf;background:rgba(255,255,255,.8);padding:0 3px;border-radius:3px;white-space:nowrap;width:auto!important;height:auto!important}
 .mapEmpty,#mapEmpty{position:absolute;inset:0;z-index:800;display:grid;place-items:center;text-align:center;padding:24px;background:var(--card);color:var(--mut)}#mapEmpty b{color:var(--ink);font-size:18px}#mapEmpty[hidden],.mapEmpty[hidden]{display:none}#mapEmpty3 b{color:var(--ink);font-size:18px}
@@ -230,6 +229,7 @@ a.chip{text-decoration:none}
       </div>
       <svg id="ndl2" viewBox="-50 -50 100 100" aria-hidden="true"><path d="M-3.5 0 L0 -40 L3.5 0Z" fill="#d42a20"/><path d="M-3.5 0 L0 40 L3.5 0Z" fill="#2b2b2b"/><circle r="3.5" fill="#333" stroke="#b9a46a" stroke-width="1.2"/></svg>
       <div class="mapbadge" id="mbadge" hidden></div>
+      <div class="mapattr">© <a href="https://www.swisstopo.admin.ch" target="_blank" rel="noopener">swisstopo</a></div>
       <div id="mapEmpty"><div><b>Noch kein Kartenblatt gewählt</b><br>Gib rechts die Nummer oder den Namen deiner Landeskarte ein.</div></div>
     </div>
     <div class="mapbar" id="mbar2">
@@ -312,7 +312,7 @@ a.chip{text-decoration:none}
       <div class="rgrp"><button class="btn" id="d3Undo">↶ Punkt</button><button class="btn" id="d3Clr">Route löschen</button></div>
     </div>
     <p class="note" id="d3Hint" style="margin:10px 0 0">Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit Mausrad, − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.</p>
-    <p class="note">Kartendaten, Wanderwege und Höhenmodell © swisstopo. Routen entlang Wegen: BRouter, Wegdaten © OpenStreetMap-Mitwirkende. Distanzen sind horizontal gemessen, wie auf der Karte. Der Massstabsbalken zeigt, wie lang 1 cm deiner Papierkarte hier auf dem Bildschirm ist.</p>
+    <p class="note">Kartendaten, Wanderwege und Höhenmodell © swisstopo. Routen entlang Wegen: BRouter, Wegdaten © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mitwirkende</a>, verfügbar unter der Open Database License (ODbL). Distanzen sind horizontal gemessen, wie auf der Karte. Der Massstabsbalken zeigt, wie lang 1 cm deiner Papierkarte hier auf dem Bildschirm ist.</p>
   </div>
 
   <section>
@@ -720,7 +720,7 @@ function d3Setup(){
   document.querySelectorAll('#scTab td:nth-child(2),#scTab td:nth-child(3)').forEach((td,i)=>td.style.fontWeight=s&&((i%2===0&&s.scale===25)||(i%2===1&&s.scale===50))?'600':'');
   if(!s||!LF)return;
   const key=s.scale+'-'+s.nr;
-  if(!D3.map){D3.map=LF.map('map3',{zoomControl:false,attributionControl:false,scrollWheelZoom:true,wheelPxPerZoomLevel:90,boxZoom:false,doubleClickZoom:false});D3.map.on('click',d3Click);D3.map.on('zoomend moveend resize',d3Bar)}
+  if(!D3.map){D3.map=LF.map('map3',{zoomControl:false,attributionControl:true,scrollWheelZoom:true,wheelPxPerZoomLevel:90,boxZoom:false,doubleClickZoom:false});D3.map.attributionControl.setPrefix(false);D3.map.attributionControl.addAttribution('© <a href="https://www.swisstopo.admin.ch" target="_blank" rel="noopener">swisstopo</a> · Routen: BRouter, © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mitwirkende</a> (ODbL)');D3.map.on('click',d3Click);D3.map.on('zoomend moveend resize',d3Bar)}
   if(D3.key===key){setTimeout(()=>{D3.map.invalidateSize();d3Bar()},50);return}
   D3.key=key;D3.layers.forEach(l=>l.remove());D3.layers=[];d3Clear();d3ClearTask();
   const[x0,y0,x1,y1]=s.bbox;D3.map.setMaxBounds(null);D3.map.setView(wgs((x0+x1)/2,(y0+y1)/2),s.scale===25?14:13,{animate:false});
@@ -884,5 +884,21 @@ if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.ser
 draw();
 }
 </script>
+<footer class="band" style="max-width:1240px;margin:0 auto;padding-top:0">
+  <details class="card"><summary style="cursor:pointer;font-weight:600;min-height:32px">Hinweise, Quellen und Datenschutz</summary>
+    <h3 style="margin-top:12px">Unabhängiges Lernprojekt</h3>
+    <p>Nordwärts ist nicht mit Suunto verbunden und wird nicht von Suunto unterstützt. «Suunto» und «MC-2» sind Marken ihrer Inhaberin und werden nur zur Bezeichnung des Geräts verwendet. Die Kompassgrafik ist eine eigene schematische Darstellung.</p>
+    <h3>Quellen</h3>
+    <p>Landeskarten, Blatteinteilung, Wanderwege und Höhenmodell: © swisstopo, Open Government Data. Routen entlang Wegen: <a href="https://brouter.de" target="_blank" rel="noopener">BRouter</a> mit Daten © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mitwirkende</a> (ODbL). Kartenbibliothek <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a> (BSD-2-Clause), Schrift Barlow (SIL Open Font License). Beides wird von dieser Website selbst ausgeliefert.</p>
+    <h3>Datenschutz</h3>
+    <p>Die App hat kein eigenes Backend und speichert Einstellungen, Messungen und das gewählte Kartenblatt nur lokal in deinem Browser. Sensordaten (Ausrichtung, Neigung) verlassen dein Gerät nicht. Für Kartenfunktionen ruft dein Browser direkt externe Dienste auf; diese sehen dabei deine IP-Adresse:</p>
+    <ul>
+      <li><b>swisstopo</b> (Bund, Schweiz): Kartenkacheln, Blattsuche, Höhenprofil. Bei «Blatt an meinem Standort» wird dein Standort in Landeskoordinaten übermittelt.</li>
+      <li><b>BRouter</b> (brouter.de, Deutschland): die Punkte deiner Route, wenn «Entlang Wegen» gewählt ist.</li>
+      <li><b>GitHub Pages</b>: Auslieferung dieser Website.</li>
+    </ul>
+    <p class="note">Die GPS-Position für Standort und Schrittmassstab wird nur auf deinem Gerät umgerechnet und nicht übermittelt.</p>
+  </details>
+</footer>
 </body>
 </html>
