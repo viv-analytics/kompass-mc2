@@ -98,10 +98,11 @@ main[hidden],#m2[hidden]{display:none!important}
 .ptlab.ab{background:#1b1b1b;color:#fff}.ptlab{border-color:#0b3d0b!important}
 #d3In{font:16px Barlow,sans-serif;width:120px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .tg input[type=number]{font:16px Barlow,sans-serif;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:auto;height:auto}
+.kv{table-layout:fixed}@media(max-width:600px){th,td{padding:6px 3px;font-size:14px}}.kv td,.kv th{white-space:normal;overflow-wrap:anywhere}.kv td:last-child,.kv th:last-child{width:9.5em;text-align:right;white-space:nowrap}
 .prof{width:100%;height:auto;display:block;margin-top:10px}
-.mapbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;margin-top:10px}
-.mapbar .ctl{flex:1 1 260px;margin:0}.zgrp{display:flex;gap:0}.zgrp .btn{min-width:48px;font-size:20px;line-height:1;padding:0}.zgrp .btn:first-child{border-radius:8px 0 0 8px}.zgrp .btn:last-child{border-radius:0 8px 8px 0;border-left:0}
-.rgrp{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.mapbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}.lgrp{display:flex;gap:8px;align-items:center}
+.mapbar .ctl{flex:1 1 100%;margin:0}.zgrp{display:flex;gap:0}.zgrp .btn{min-width:48px;font-size:20px;line-height:1;padding:0}.zgrp .btn:first-child{border-radius:8px 0 0 8px}.zgrp .btn:last-child{border-radius:0 8px 8px 0;border-left:0}
+.rgrp{display:flex;gap:8px;flex-wrap:wrap}
 .mapbar[hidden],.rgrp[hidden]{display:none}
 .tg{display:flex;gap:8px;align-items:center;min-height:44px;font-size:15px;margin-right:10px}.tg input{width:20px;height:20px;accent-color:var(--acc)}
 a.chip{text-decoration:none}
@@ -233,7 +234,7 @@ a.chip{text-decoration:none}
     <div class="mapbar" id="mbar2">
       <div class="ctl mrot"><label for="rM">Karte drehen <b id="oM"></b></label>
         <input type="range" id="rM" min="-180" max="180" step="1"><button class="btn" data-m="-1" aria-label="1 Grad links drehen">−1°</button><button class="btn" data-m="1" aria-label="1 Grad rechts drehen">+1°</button></div>
-      <div class="zgrp"><button class="btn" id="mZout" aria-label="Verkleinern">−</button><button class="btn" id="mZin" aria-label="Vergrössern">+</button></div><button class="btn" id="mHome">⌖ Blattmitte</button>
+      <div class="lgrp"><div class="zgrp"><button class="btn" id="mZout" aria-label="Verkleinern">−</button><button class="btn" id="mZin" aria-label="Vergrössern">+</button></div><button class="btn" id="mHome">⌖ Blattmitte</button></div>
     </div>
     <p class="note">Kartendaten und Blatteinteilung © swisstopo (Landeskarte, WMTS und Geodienste-API). Gitter LV95 und Meridian berechnet mit den Näherungsformeln von swisstopo. Der Bildschirm oben steht für Norden im Gelände.</p>
   </div>
@@ -306,10 +307,10 @@ a.chip{text-decoration:none}
       <div id="mapEmpty3" class="mapEmpty"><div><b>Noch kein Kartenblatt gewählt</b><br>Wähle dein Blatt in <a href="#karte">Modul 2</a>. Es gilt dann für alle Module.</div></div>
     </div>
     <div class="mapbar" id="mbar3">
-      <div class="zgrp"><button class="btn" id="d3Zout" aria-label="Verkleinern">−</button><button class="btn" id="d3Zin" aria-label="Vergrössern">+</button></div><button class="btn" id="d3Home">⌖ Blattmitte</button>
-      <div class="rgrp"><button class="btn" id="d3Undo">↶ Letzter Punkt</button><button class="btn" id="d3Clr">Route löschen</button></div>
+      <div class="lgrp"><div class="zgrp"><button class="btn" id="d3Zout" aria-label="Verkleinern">−</button><button class="btn" id="d3Zin" aria-label="Vergrössern">+</button></div><button class="btn" id="d3Home">⌖ Blattmitte</button></div>
+      <div class="rgrp"><button class="btn" id="d3Undo">↶ Punkt</button><button class="btn" id="d3Clr">Route löschen</button></div>
     </div>
-    <p class="note" id="d3Hint" style="margin:6px 0 0">Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit Mausrad, − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.</p>
+    <p class="note" id="d3Hint" style="margin:10px 0 0">Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit Mausrad, − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.</p>
     <p class="note">Kartendaten, Wanderwege und Höhenmodell © swisstopo. Routen entlang Wegen: BRouter, Wegdaten © OpenStreetMap-Mitwirkende. Distanzen sind horizontal gemessen, wie auf der Karte. Der Massstabsbalken zeigt, wie lang 1 cm deiner Papierkarte hier auf dem Bildschirm ist.</p>
   </div>
 
@@ -735,11 +736,13 @@ function d3Setup(){
 function d3Bar(){
   if(!D3.map||!SH.sel)return;const c=D3.map.getCenter(),[E,N]=lv95(c.lat,c.lng);
   const p1=D3.map.latLngToContainerPoint(wgs(E,N)),p2=D3.map.latLngToContainerPoint(wgs(E+1000,N));
-  const pxkm=Math.hypot(p2.x-p1.x,p2.y-p1.y),cm=sden()/100;let n=4;const W=$('mapbox3').clientWidth*.6;while(n>1&&pxkm*cm*n/1000>W)n--;
-  const step=pxkm*cm/1000,len=step*n;let t='';
-  for(let i=0;i<=n;i++)t+=`<line x1="${(i*step).toFixed(1)}" x2="${(i*step).toFixed(1)}" y1="10" y2="${i%n?18:22}" stroke="#111" stroke-width="1.5"/><text x="${(i*step).toFixed(1)}" y="34" font-size="11" text-anchor="middle" font-family="Barlow" fill="#111">${i*cm>=1000?(i*cm/1000)+' km':i*cm+(i?' m':'')}</text>`;
-  $('sbar').setAttribute('width',Math.ceil(len+40));$('sbar').setAttribute('height','58');
-  $('sbar').innerHTML=`<rect x="-8" y="-4" width="${(len+34).toFixed(1)}" height="58" rx="6" fill="rgba(255,255,255,.88)"/>${Array.from({length:n},(_,i)=>`<rect x="${(i*step).toFixed(1)}" y="10" width="${step.toFixed(1)}" height="5" fill="${i%2?'#fff':'#111'}" stroke="#111"/>`).join('')}${t}<text x="0" y="48" font-size="10.5" font-family="Barlow" fill="#444">1 Feld = 1 cm auf deiner Karte</text>`;
+  const pxkm=Math.hypot(p2.x-p1.x,p2.y-p1.y),cm=sden()/100,cmPx=pxkm*cm/1000,W=$('mapbox3').clientWidth*.55;
+  let k=1;while(cmPx*k<48&&k<64)k*=2;let n=4;while(n>2&&cmPx*k*n>W)n--;while(n>1&&cmPx*k*n>W)n--;
+  const step=cmPx*k,len=step*n,lab=v=>v>=1000?(v/1000).toLocaleString('de-CH')+' km':v+' m';
+  let t='';for(let i=0;i<=n;i++)t+=`<line x1="${(i*step).toFixed(1)}" x2="${(i*step).toFixed(1)}" y1="10" y2="${i%n?18:22}" stroke="#111" stroke-width="1.5"/><text x="${(i*step).toFixed(1)}" y="34" font-size="11" text-anchor="${i?i===n?'end':'middle':'start'}" font-family="Barlow" fill="#111">${i?lab(i*k*cm):'0'}</text>`;
+  const cap=`1 Feld = ${k} cm auf deiner Karte = ${lab(k*cm)} im Gelände`,bw=Math.max(len+16,cap.length*5.6+16);
+  $('sbar').setAttribute('width',Math.ceil(bw));$('sbar').setAttribute('height','58');
+  $('sbar').innerHTML=`<rect x="-8" y="-4" width="${bw.toFixed(1)}" height="58" rx="6" fill="rgba(255,255,255,.9)"/>${Array.from({length:n},(_,i)=>`<rect x="${(i*step).toFixed(1)}" y="10" width="${step.toFixed(1)}" height="5" fill="${i%2?'#fff':'#111'}" stroke="#111"/>`).join('')}${t}<text x="0" y="48" font-size="10.5" font-family="Barlow" fill="#444">${cap}</text>`;
 }
 function d3Click(e){
   if(D3.mode!=='mess')return;const[E,N]=lv95(e.latlng.lat,e.latlng.lng);
@@ -812,9 +815,10 @@ async function d3Prof(){
       <text x="${l-6}" y="${Y(zmin)+4}" text-anchor="end" font-size="11" fill="var(--mut)" font-family="Barlow">${Math.round(zmin)} m</text>
       <text x="${l}" y="${H-6}" font-size="11" fill="var(--mut)" font-family="Barlow">0</text>
       <text x="${W-rr}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--mut)" font-family="Barlow">${km.toFixed(2)} km</text></svg>
-      <table><thead><tr><th>Grösse</th><th>Wert</th></tr></thead><tbody>
+      <table class="kv"><thead><tr><th>Grösse</th><th>Wert</th></tr></thead><tbody>
       <tr><td>Weglänge (horizontal)</td><td>${km.toFixed(2)} km</td></tr><tr><td>Aufstieg</td><td>${Math.round(up)} m</td></tr><tr><td>Abstieg</td><td>${Math.round(dn)} m</td></tr>
-      <tr><td><b>Gehzeit Faustregel bfu / Wanderwege</b></td><td><b>${hm(tBfu)}</b></td></tr><tr><td class="note">davon Distanz · Aufstieg · Abstieg</td><td class="note">${hm(tB[0])} · ${hm(tB[1])} · ${hm(tB[2])}</td></tr><tr><td>Gehzeit DIN 33466</td><td>${hm(tDin)}</td></tr><tr><td class="note">davon Aufstiegs- · Abstiegsabschnitte</td><td class="note">${hm(tUp)} · ${hm(tDn)}</td></tr></tbody></table>
+      <tr><td><b>Gehzeit Faustregel bfu / Wanderwege</b></td><td><b>${hm(tBfu)}</b></td></tr><tr><td>Gehzeit DIN 33466</td><td>${hm(tDin)}</td></tr></tbody></table>
+      <p class="note" style="margin-top:8px">Aufteilung bfu: Distanz ${hm(tB[0])}, Aufstieg ${hm(tB[1])}, Abstieg ${hm(tB[2])}. Aufteilung DIN: Aufstiegsabschnitte ${hm(tUp)}, Abstiegsabschnitte ${hm(tDn)}.</p>
       <p class="note">Faustregel bfu/Schweizer Wanderwege: je 15 min pro km, pro 100 m Aufstieg und pro 200 m Abstieg, addiert. DIN 33466: 4 km/h, 300 m/h Aufstieg, 500 m/h Abstieg; je für Auf- und Abstiegsabschnitte die kürzere Zeit halbiert und zur längeren addiert. Beide ohne Pausen. Höhen aus dem swisstopo-Höhenmodell ${rtMode()==='trail'?'entlang der berechneten Route':'entlang der Luftlinie zwischen deinen Punkten, nicht entlang des Wegs'}.</p>`;
   }catch(e){$('d3Out').innerHTML='<p class="warn">Höhenprofil nicht verfügbar. Internetverbindung prüfen.</p>'}
 }
