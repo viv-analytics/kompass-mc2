@@ -83,6 +83,11 @@ main[hidden],#m2[hidden]{display:none!important}
 #ndl2{position:absolute;width:100px;height:100px;left:calc(50% - 50px);top:calc(50% - 50px);pointer-events:none;z-index:600}
 .mapbadge{position:absolute;left:10px;top:10px;z-index:700;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:13px;font-weight:600}
 .glab{font:600 11px Barlow,sans-serif;color:#1f5fbf;background:rgba(255,255,255,.8);padding:0 3px;border-radius:3px;white-space:nowrap;width:auto!important;height:auto!important}
+#mapEmpty{position:absolute;inset:0;z-index:800;display:grid;place-items:center;text-align:center;padding:24px;background:var(--card);color:var(--mut)}#mapEmpty b{color:var(--ink);font-size:18px}#mapEmpty[hidden]{display:none}
+.seg{display:flex;gap:8px;margin-top:12px}.seg label{display:flex;gap:6px;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:8px;cursor:pointer}.seg label:has(input:checked){border-color:var(--ink);background:var(--ink);color:var(--bg)}.seg input{accent-color:var(--acc)}
+#shQ{font:16px Barlow,sans-serif;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.shlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.shlist button{min-height:44px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:4px 12px;font:15px Barlow,sans-serif;cursor:pointer}.shlist b{color:var(--acc);margin-right:6px}
+.shsel{margin-top:12px;padding:10px 12px;border-radius:8px;background:light-dark(#f2f2ee,#222527)}
 .tg{display:flex;gap:8px;align-items:center;min-height:44px;font-size:15px;margin-right:10px}.tg input{width:20px;height:20px;accent-color:var(--acc)}
 a.chip{text-decoration:none}
 @media(max-width:900px){#m2{grid-template-columns:minmax(0,1fr)}#m2>div:first-child{position:static}}
@@ -207,19 +212,36 @@ a.chip{text-decoration:none}
         </svg>
       </div>
       <svg id="ndl2" viewBox="-50 -50 100 100" aria-hidden="true"><path d="M-3.5 0 L0 -40 L3.5 0Z" fill="#d42a20"/><path d="M-3.5 0 L0 40 L3.5 0Z" fill="#2b2b2b"/><circle r="3.5" fill="#333" stroke="#b9a46a" stroke-width="1.2"/></svg>
-      <div class="mapbadge" id="mbadge"></div>
+      <div class="mapbadge" id="mbadge" hidden></div>
+      <div id="mapEmpty"><div><b>Noch kein Kartenblatt gewählt</b><br>Gib rechts die Nummer oder den Namen deiner Landeskarte ein.</div></div>
     </div>
-    <p class="note">Kartendaten © swisstopo (Landeskarte, Web-Dienst WMTS). Gitter LV95 und Meridian berechnet mit den Näherungsformeln von swisstopo. Der Bildschirm oben steht für Norden im Gelände.</p>
+    <p class="note">Kartendaten und Blatteinteilung © swisstopo (Landeskarte, WMTS und Geodienste-API). Gitter LV95 und Meridian berechnet mit den Näherungsformeln von swisstopo. Der Bildschirm oben steht für Norden im Gelände.</p>
   </div>
 
   <section>
     <div class="card">
+      <h2>Dein Kartenblatt</h2>
+      <p class="note" style="margin:6px 0 0">Die Blattnummer steht auf der Landeskarte oben am Rand und auf dem Umschlag.</p>
+      <div class="seg" role="radiogroup" aria-label="Massstab">
+        <label><input type="radio" name="sc" value="25"> 1:25 000</label>
+        <label><input type="radio" name="sc" value="50"> 1:50 000</label>
+      </div>
+      <form id="shForm" class="row" autocomplete="off">
+        <input id="shQ" type="search" placeholder="Blattnummer oder Name" aria-label="Blattnummer oder Name" style="flex:1 1 200px">
+        <button class="btn pri" type="submit">Suchen</button>
+        <button class="btn" type="button" id="shGeo">Blatt an meinem Standort</button>
+      </form>
+      <div id="shRes"></div>
+      <div id="shSel"></div>
+    </div>
+
+    <div class="card" id="exCard" hidden>
       <h2>Karte einnorden</h2>
       <p style="margin:8px 0 0">Die Karte liegt verdreht vor dir. Der Kompass ist auf 0° gestellt und liegt parallel zu den Gitterlinien. Dreh die Karte samt Kompass, bis die Nadel im Nordpfeil liegt.</p>
       <div class="ctl"><label for="rM">Karte drehen <b id="oM"></b></label>
         <input type="range" id="rM" min="-180" max="180" step="1"><button class="btn" data-m="-1">−1°</button><button class="btn" data-m="1">+1°</button></div>
       <div class="stat" id="mst"></div>
-      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mZin">Zoom +</button><button class="btn" id="mZout">Zoom −</button></div>
+      <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mPan">Ausschnitt verschieben</button><button class="btn" id="mZin">Zoom +</button><button class="btn" id="mZout">Zoom −</button></div>
       <div class="row">
         <label class="tg"><input type="checkbox" id="tGrid" checked> Gitterlinien LV95</label>
         <label class="tg"><input type="checkbox" id="tMer"> Meridian (geografisch Nord)</label>
@@ -240,7 +262,7 @@ a.chip{text-decoration:none}
     </div>
 
     <div class="card">
-      <h3>Drei Nordrichtungen in Winterthur</h3>
+      <h3>Drei Nordrichtungen auf deinem Blatt</h3>
       <table class="stack"><thead><tr><th>Nordrichtung</th><th>Bezug</th><th>Abweichung</th></tr></thead><tbody id="northTab"></tbody></table>
       <p class="note">Für das Einnorden im Gelände sind diese Abweichungen meist vernachlässigbar: 1° Fehler ergibt rund 17 m seitliche Abweichung pro km. Wann man sie berücksichtigen muss, zeigt Modul 4.</p>
     </div>
@@ -248,7 +270,7 @@ a.chip{text-decoration:none}
     <div class="card">
       <h3>Feldübung</h3>
       <ol class="field">
-        <li>Nimm die Landeskarte 1:25 000 von Winterthur oder öffne den gleichen Ausschnitt in der swisstopo-App und schalte dort die Drehung ab.</li>
+        <li>Nimm dein gewähltes Kartenblatt und suche den gleichen Ausschnitt wie hier.</li>
         <li>Norde die Karte mit dem MC-2 ein wie oben beschrieben.</li>
         <li>Suche drei markante Punkte im Gelände (Kirchturm, Hügel, Hochhaus) und finde sie auf der Karte, ohne die Karte nochmals zu drehen.</li>
         <li>Vergleich: Schalte hier «Live» ein und halte das iPhone flach. Liegt die Karte gleich wie deine Papierkarte?</li>
@@ -472,58 +494,107 @@ $('tiltHold').addEventListener('click',()=>{const t=tilt();$('tiltHeld').textCon
 $('geoGo').addEventListener('click',geoGo);
 $('geoCopy').addEventListener('click',()=>{if(L.geo&&navigator.clipboard)navigator.clipboard.writeText(L.geo).then(()=>{$('geoCopy').textContent='Kopiert'},()=>{$('geoCopy').textContent='Nicht möglich'})});
 cmpRender();
-/* ---------- Modul 2: Karte einnorden (Winterthur) ---------- */
-const LF=window.L,C0=[47.5002,8.7239];
+/* ---------- Modul 2: Karte einnorden auf dem eigenen Kartenblatt ---------- */
+const LF=window.L,API='https://api3.geo.admin.ch/rest/services/api/MapServer';
 function wgs(E,N){const y=(E-2600000)/1e6,x=(N-1200000)/1e6;
   const lo=2.6779094+4.728982*y+0.791484*y*x+0.1306*y*x*x-0.0436*y*y*y;
   const la=16.9023892+3.238272*x-0.270978*y*y-0.002528*x*x-0.0447*y*y*x-0.014*x*x*x;return[la*100/36,lo*100/36]}
-const [E0,N0]=lv95(C0[0],C0[1]);
-const conv=(()=>{const p=wgs(E0,N0+2000);return Math.atan2((p[1]-C0[1])*Math.cos(C0[0]*Math.PI/180),p[0]-C0[0])*180/Math.PI})();
-const M={map:null,theta:0,grid:null,mer:null,z:15};
+const M={map:null,theta:0,tiles:null,grid:null,frame:null,mer:null,pan:false};
+const SH={scale:null,sel:null};
+try{const v=JSON.parse(localStorage.getItem('mc2-sheet')||'null');if(v&&v.bbox&&v.bbox.length===4&&(v.scale===25||v.scale===50)){SH.sel=v;SH.scale=v.scale}}catch(e){}
 let m2Live=null;
-function m2Init(){
-  if(M.map||!LF){if(!LF)$('mMsg').textContent='Die Kartenbibliothek konnte nicht geladen werden (offline?).';return}
-  M.map=LF.map('lmap',{center:C0,zoom:M.z,zoomControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,attributionControl:false});
-  LF.tileLayer('https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg',{maxZoom:18,minZoom:7}).on('tileerror',()=>{$('mMsg').textContent='Kartenkacheln von swisstopo konnten nicht geladen werden.'}).addTo(M.map);
-  const g=[],eA=Math.floor(E0/1000)*1000,nA=Math.floor(N0/1000)*1000;
-  for(let k=-5;k<=5;k++){const E=eA+k*1000,N=nA+k*1000,a=[],b=[];
-    for(let t=-5000;t<=5000;t+=500){a.push(wgs(E,nA+t));b.push(wgs(eA+t,N))}
-    g.push(LF.polyline(a,{color:'#1f5fbf',weight:1.3,opacity:.85,interactive:false}),LF.polyline(b,{color:'#1f5fbf',weight:1.3,opacity:.85,interactive:false}));
-    const fE=String(E/1000).replace(/^(\d)(\d{3})$/,"$1'$2"),fN=String(N/1000).replace(/^(\d)(\d{3})$/,"$1'$2");
-    g.push(LF.marker(wgs(E+40,N0-700),{icon:LF.divIcon({className:'glab',html:fE,iconAnchor:[0,8]}),interactive:false}),LF.marker(wgs(E0-700,N+40),{icon:LF.divIcon({className:'glab',html:fN,iconAnchor:[0,16]}),interactive:false}))}
-  M.grid=LF.layerGroup(g).addTo(M.map);
-  M.mer=LF.polyline([[C0[0]-.06,C0[1]],[C0[0]+.06,C0[1]]],{color:'#111',weight:1.6,dashArray:'6 5',interactive:false});
-  $('northTab').innerHTML=`<tr><td data-l="Nordrichtung">Geografisch Nord</td><td data-l="Bezug">Meridian, Richtung Nordpol</td><td data-l="Abweichung">0°</td></tr>
-  <tr><td data-l="Nordrichtung">Gitternord</td><td data-l="Bezug">senkrechte Linien der Landeskarte (LV95)</td><td data-l="Abweichung">${conv>0?'+':''}${conv.toFixed(2)}° (${conv>0?'östlich':'westlich'})</td></tr>
-  <tr><td data-l="Nordrichtung">Magnetisch Nord</td><td data-l="Bezug">wohin die Kompassnadel zeigt</td><td data-l="Abweichung">wenige Grad östlich, genauer Wert in Modul 4</td></tr>`;
-  m2New();
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const km=v=>String(Math.round(v/1000)).replace(/^(\d)(\d{3})$/,"$1'$2");
+const kmx=v=>{const t=(v/1000).toFixed(v%1000?1:0).split('.');return t[0].replace(/^(\d)(\d{3})$/,"$1'$2")+(t[1]?'.'+t[1]:'')};
+function convAt(ll){const[E,N]=lv95(ll[0],ll[1]),p=wgs(E,N+2000);return Math.atan2((p[1]-ll[1])*Math.cos(ll[0]*Math.PI/180),p[0]-ll[0])*180/Math.PI}
+function curConv(){if(!M.map)return 0;const c=M.map.getCenter();return convAt([c.lat,c.lng])}
+function group(res){const g={};(res||[]).forEach(r=>{const a=r.attributes||{},k=a.tileid;if(!k||!r.bbox)return;const y=+a.year||+a.releasekey||0;if(!g[k])g[k]={nr:String(k),name:String(a.lk_name||a.label||''),bbox:r.bbox.map(Number),year:y};else g[k].year=Math.max(g[k].year,y)});return Object.values(g).sort((x,y)=>x.nr.localeCompare(y.nr))}
+function needScale(){if(!SH.scale){$('shRes').innerHTML='<p class="warn">Wähle zuerst den Massstab deiner Karte.</p>';return true}return false}
+async function shSearch(q){
+  q=q.trim();if(needScale())return;if(!q){$('shRes').innerHTML='<p class="warn">Gib eine Blattnummer oder einen Namen ein.</p>';return}
+  $('shRes').innerHTML='<p class="note">Suche bei swisstopo …</p>';
+  const num=/^\d+$/.test(q);
+  try{const r=await fetch(`${API}/find?layer=ch.swisstopo.pixelkarte-pk${SH.scale}.metadata&searchText=${encodeURIComponent(q)}&searchField=${num?'tileid':'lk_name'}&returnGeometry=true&sr=2056&contains=${num?'false':'true'}`).then(r=>r.json());
+    const g=group(r.results);
+    if(!g.length){$('shRes').innerHTML=`<p class="warn">Kein Blatt 1:${SH.scale===25?'25 000':'50 000'} gefunden für «${esc(q)}».</p>`;return}
+    if(g.length===1){shPick(g[0]);return}
+    $('shRes').innerHTML=`<div class="shlist">${g.slice(0,24).map((x,i)=>`<button data-i="${i}"><b>${esc(x.nr)}</b>${esc(x.name)}</button>`).join('')}</div>`;
+    $('shRes').querySelectorAll('[data-i]').forEach(b=>b.addEventListener('click',()=>shPick(g[+b.dataset.i])));
+  }catch(e){$('shRes').innerHTML='<p class="warn">swisstopo ist gerade nicht erreichbar. Internetverbindung prüfen.</p>'}
 }
+function shGeo(){
+  if(needScale())return;
+  if(!navigator.geolocation){$('shRes').innerHTML='<p class="warn">Standort wird nicht unterstützt.</p>';return}
+  $('shRes').innerHTML='<p class="note">Suche GPS …</p>';
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const[E,N]=lv95(pos.coords.latitude,pos.coords.longitude);
+    try{const r=await fetch(`${API}/identify?geometry=${Math.round(E)},${Math.round(N)}&geometryType=esriGeometryPoint&layers=all:ch.swisstopo.pixelkarte-pk${SH.scale}.metadata&tolerance=0&sr=2056&returnGeometry=true&mapExtent=${Math.round(E-1000)},${Math.round(N-1000)},${Math.round(E+1000)},${Math.round(N+1000)}&imageDisplay=500,500,96`).then(r=>r.json());
+      const g=group(r.results);if(!g.length){$('shRes').innerHTML='<p class="warn">An deinem Standort gibt es kein Landeskartenblatt (ausserhalb der Schweiz?).</p>';return}shPick(g[0]);
+    }catch(e){$('shRes').innerHTML='<p class="warn">swisstopo ist gerade nicht erreichbar.</p>'}
+  },err=>{$('shRes').innerHTML=`<p class="warn">${err.code===1?'Standortzugriff abgelehnt.':'Kein GPS-Signal.'}</p>`},{enableHighAccuracy:true,timeout:20000});
+}
+function shPick(x){SH.sel={scale:SH.scale,nr:x.nr,name:x.name,bbox:x.bbox,year:x.year};try{localStorage.setItem('mc2-sheet',JSON.stringify(SH.sel))}catch(e){}$('shRes').innerHTML='';m2Setup()}
+function shRender(){
+  document.querySelectorAll('input[name=sc]').forEach(r=>r.checked=+r.value===SH.scale);
+  const s=SH.sel;$('exCard').hidden=!s;$('mapEmpty').hidden=!!s;$('mbadge').hidden=!s;
+  $('shSel').innerHTML=s?`<div class="shsel"><b>LK${s.scale} Blatt ${esc(s.nr)} ${esc(s.name)}</b><br><span class="note">E ${kmx(s.bbox[0])}–${kmx(s.bbox[2])} km · N ${kmx(s.bbox[1])}–${kmx(s.bbox[3])} km${s.year?` · neueste Ausgabe bei swisstopo: ${s.year}`:''}</span><div class="row"><button class="btn" id="shClr">Anderes Blatt</button></div></div>`:'';
+  if(s)$('shClr').addEventListener('click',()=>{SH.sel=null;try{localStorage.removeItem('mc2-sheet')}catch(e){}shRender();$('shQ').focus()});
+}
+function m2Setup(){
+  shRender();const s=SH.sel;if(!s)return;
+  if(!LF){$('mMsg').textContent='Die Kartenbibliothek konnte nicht geladen werden (offline?).';return}
+  if(!M.map){M.map=LF.map('lmap',{zoomControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,attributionControl:false});M.map.on('moveend zoomend',()=>{m2Mer();m2Draw()})}
+  [M.tiles,M.grid,M.frame].forEach(l=>l&&l.remove());
+  {const[a0,b0,a1,b1]=s.bbox;M.map.setMaxBounds(null);M.map.setView(wgs((a0+a1)/2,(b0+b1)/2),s.scale===25?14:13,{animate:false})}
+  M.tiles=LF.tileLayer(`https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe-pk${s.scale}.noscale/default/current/3857/{z}/{x}/{y}.jpeg`,{maxZoom:18,minZoom:11}).on('tileerror',()=>{$('mMsg').textContent='Kartenkacheln von swisstopo konnten nicht geladen werden.'}).addTo(M.map);
+  const[x0,y0,x1,y1]=s.bbox,g=[],lab={className:'glab',iconAnchor:[0,16]};
+  for(let E=Math.ceil(x0/1000)*1000;E<=x1;E+=1000){const a=[];for(let N=y0;N<=y1;N+=500)a.push(wgs(E,Math.min(N,y1)));g.push(LF.polyline(a,{color:'#1f5fbf',weight:1.2,opacity:.8,interactive:false}),LF.marker(wgs(E+60,y0+250),{icon:LF.divIcon({...lab,html:km(E)}),interactive:false}))}
+  for(let N=Math.ceil(y0/1000)*1000;N<=y1;N+=1000){const a=[];for(let E=x0;E<=x1;E+=500)a.push(wgs(Math.min(E,x1),N));g.push(LF.polyline(a,{color:'#1f5fbf',weight:1.2,opacity:.8,interactive:false}),LF.marker(wgs(x0+150,N+60),{icon:LF.divIcon({...lab,html:km(N)}),interactive:false}))}
+  M.grid=LF.layerGroup(g);if($('tGrid').checked)M.grid.addTo(M.map);
+  const fr=[];[[x0,y0,x1,y0],[x1,y0,x1,y1],[x1,y1,x0,y1],[x0,y1,x0,y0]].forEach(([a,b,c,d])=>{for(let t=0;t<=20;t++)fr.push(wgs(a+(c-a)*t/20,b+(d-b)*t/20))});
+  M.frame=LF.polyline(fr,{color:'#111',weight:2.5,interactive:false}).addTo(M.map);
+  const sw=wgs(x0,y0),ne=wgs(x1,y1);M.map.setMaxBounds(LF.latLngBounds([Math.min(sw[0],wgs(x1,y0)[0]),Math.min(sw[1],wgs(x0,y1)[1])],[Math.max(ne[0],wgs(x0,y1)[0]),Math.max(ne[1],wgs(x1,y0)[1])]).pad(.15));
+  setTimeout(()=>{M.map.invalidateSize();m2New()},60);
+}
+function m2Mer(){if(!M.map)return;const c=M.map.getCenter();if(M.mer)M.mer.remove();M.mer=LF.polyline([[c.lat-.08,c.lng],[c.lat+.08,c.lng]],{color:'#111',weight:1.6,dashArray:'6 5',interactive:false});if($('tMer').checked)M.mer.addTo(M.map);
+  const cv=convAt([c.lat,c.lng]);$('northTab').innerHTML=`<tr><td data-l="Nordrichtung">Geografisch Nord</td><td data-l="Bezug">Meridian, Richtung Nordpol</td><td data-l="Abweichung">0°</td></tr>
+  <tr><td data-l="Nordrichtung">Gitternord</td><td data-l="Bezug">senkrechte Linien der Landeskarte (LV95)</td><td data-l="Abweichung">${cv>0?'+':''}${cv.toFixed(2)}° (${cv>0?'östlich':'westlich'})</td></tr>
+  <tr><td data-l="Nordrichtung">Magnetisch Nord</td><td data-l="Bezug">wohin die Kompassnadel zeigt</td><td data-l="Abweichung">wenige Grad östlich, genauer Wert in Modul 4</td></tr>`}
 function needleA(){return $('tLive').checked&&L.got?-heading():0}
+function setPan(on){M.pan=on;if(!M.map)return;if(on){M.theta=0;$('tLive').checked=false;M.map.dragging.enable();M.map.touchZoom.enable();$('mPan').textContent='Übung starten';$('mPan').classList.add('pri')}else{M.map.dragging.disable();M.map.touchZoom.disable();$('mPan').textContent='Ausschnitt verschieben';$('mPan').classList.remove('pri')}m2Draw()}
 function m2Draw(){
-  if(!M.map)return;
+  if(!M.map||!SH.sel)return;
+  const conv=curConv();
   $('mapRot').style.transform=`rotate(${M.theta}deg)`;
   $('miniC').style.transform=`rotate(${conv}deg)`;
-  $('miniC').style.display=$('tCmp').checked?'':'none';
-  const nA=needleA();$('ndl2').style.transform=`rotate(${nA}deg)`;
-  $('rM').value=Math.round(norm(M.theta));$('oM').textContent=Math.round(norm(M.theta))+'°';
-  $('mbadge').textContent=`Winterthur · Zoom ${M.map.getZoom()}`;
-  const e=norm(M.theta+conv-nA),ok=Math.abs(e)<=2,st=$('mst');st.classList.toggle('good',ok);
+  $('miniC').style.display=$('tCmp').checked&&!M.pan?'':'none';
+  const nA=needleA();$('ndl2').style.display=M.pan?'none':'';$('ndl2').style.transform=`rotate(${nA}deg)`;
+  $('rM').value=Math.round(norm(M.theta));$('oM').textContent=Math.round(norm(M.theta))+'°';$('rM').disabled=M.pan;
+  $('mbadge').textContent=`LK${SH.sel.scale} ${SH.sel.nr} ${SH.sel.name} · Zoom ${M.map.getZoom()}`;
+  const st=$('mst');
+  if(M.pan){st.classList.remove('good');st.innerHTML='<span>Verschiebe die Karte zu einem Ausschnitt, den du im Gelände kennst. Dann «Übung starten».</span>';return}
+  const e=norm(M.theta+conv-nA),ok=Math.abs(e)<=2;st.classList.toggle('good',ok);
   st.innerHTML=$('tLive').checked?`<span class="big">${L.got?Math.round(heading())+'°':'–'}</span><span>${L.got?'Live: Die Karte dreht gegen dein iPhone und bleibt so eingenordet.':'Live braucht aktive Sensoren: Modul 1 › Live mit iPhone › Sensoren aktivieren.'}</span>`
    :`<span class="big">${ok?'0°':Math.abs(Math.round(e))+'°'}</span><span>${ok?'Eingenordet: Rot in Rot. Kartennord zeigt nach Norden.':'Noch '+Math.abs(Math.round(e))+'° daneben. Karte '+(e>0?'nach links':'nach rechts')+' drehen.'}</span>`;
 }
-function m2New(){M.theta=(Math.random()<.5?-1:1)*(40+Math.floor(Math.random()*130));m2Draw()}
-m2Live=()=>{if(M.map&&$('tLive').checked&&!$('m2').hidden){M.theta=norm(-heading()-conv);m2Draw()}};
+function m2New(){if(M.pan)setPan(false);M.theta=(Math.random()<.5?-1:1)*(40+Math.floor(Math.random()*130));m2Draw()}
+m2Live=()=>{if(M.map&&SH.sel&&!M.pan&&$('tLive').checked&&!$('m2').hidden){M.theta=norm(-heading()-curConv());m2Draw()}};
+document.querySelectorAll('input[name=sc]').forEach(r=>r.addEventListener('change',()=>{SH.scale=+r.value;$('shRes').innerHTML='';if(SH.sel&&SH.sel.scale!==SH.scale){SH.sel=null;try{localStorage.removeItem('mc2-sheet')}catch(e){}shRender()}}));
+$('shForm').addEventListener('submit',e=>{e.preventDefault();shSearch($('shQ').value)});
+$('shGeo').addEventListener('click',shGeo);
+$('mPan').addEventListener('click',()=>M.pan?m2New():setPan(true));
 $('rM').addEventListener('input',e=>{if($('tLive').checked)$('tLive').checked=false;M.theta=+e.target.value;m2Draw()});
-document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{$('tLive').checked=false;M.theta=norm(M.theta+ +b.dataset.m);m2Draw()}));
+document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{if(M.pan)return;$('tLive').checked=false;M.theta=norm(M.theta+ +b.dataset.m);m2Draw()}));
 $('mNew').addEventListener('click',()=>{$('tLive').checked=false;m2New()});
-$('mZin').addEventListener('click',()=>{M.map&&M.map.setZoom(Math.min(18,M.map.getZoom()+1));m2Draw()});
-$('mZout').addEventListener('click',()=>{M.map&&M.map.setZoom(Math.max(12,M.map.getZoom()-1));m2Draw()});
-$('tGrid').addEventListener('change',e=>{if(M.map)e.target.checked?M.grid.addTo(M.map):M.grid.remove()});
-$('tMer').addEventListener('change',e=>{if(M.map)e.target.checked?M.mer.addTo(M.map):M.mer.remove()});
+$('mZin').addEventListener('click',()=>{M.map&&M.map.setZoom(Math.min(18,M.map.getZoom()+1))});
+$('mZout').addEventListener('click',()=>{M.map&&M.map.setZoom(Math.max(11,M.map.getZoom()-1))});
+$('tGrid').addEventListener('change',e=>{if(M.grid&&M.map)e.target.checked?M.grid.addTo(M.map):M.grid.remove()});
+$('tMer').addEventListener('change',e=>{if(M.mer&&M.map)e.target.checked?M.mer.addTo(M.map):M.mer.remove()});
 $('tCmp').addEventListener('change',m2Draw);
-$('tLive').addEventListener('change',()=>{if($('tLive').checked&&!L.got)$('mMsg').textContent='Zuerst in Modul 1 › Live mit iPhone die Sensoren aktivieren.';else $('mMsg').textContent='';m2Live();m2Draw()});
+$('tLive').addEventListener('change',()=>{if(M.pan)setPan(false);$('mMsg').textContent=$('tLive').checked&&!L.got?'Zuerst in Modul 1 › Live mit iPhone die Sensoren aktivieren.':'';m2Live();m2Draw()});
+function m2Init(){shRender();if(SH.sel&&!M.map)m2Setup()}
 /* ---------- Navigation ---------- */
-const SUBS={aufbau:'Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.',karte:'Modul 2 von 9: Orientierung auf der Karte. Norde die Landeskarte von Winterthur mit dem Kompass ein und lerne die drei Nordrichtungen kennen.'};
+const SUBS={aufbau:'Modul 1 von 9: Aufbau. Tippe auf die Teile des Geräts, dreh Ring und Gerät, und prüf dein Wissen im Quiz. Danach jeden Schritt mit dem echten Kompass nachvollziehen.',karte:'Modul 2 von 9: Orientierung auf der Karte. Wähle dein Kartenblatt, norde es mit dem Kompass ein und lerne die drei Nordrichtungen kennen.'};
 function route(){const h=location.hash.replace('#','');const k=h==='karte'?'karte':'aufbau';
   $('m1').hidden=k!=='aufbau';$('m2').hidden=k!=='karte';$('sub').textContent=SUBS[k];
   document.querySelectorAll('#mods [data-mod]').forEach(a=>a.classList.toggle('on',a.dataset.mod===k));
