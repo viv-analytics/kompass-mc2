@@ -308,6 +308,7 @@ a.chip{text-decoration:none}
       <div class="zgrp"><button class="btn" id="d3Zout" aria-label="Verkleinern">−</button><button class="btn" id="d3Zin" aria-label="Vergrössern">+</button></div>
       <div class="rgrp"><button class="btn" id="d3Undo">↶ Letzter Punkt</button><button class="btn" id="d3Clr">Route löschen</button></div>
     </div>
+    <p class="note" id="d3Hint" style="margin:6px 0 0">Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.</p>
     <p class="note">Kartendaten, Wanderwege und Höhenmodell © swisstopo. Routen entlang Wegen: BRouter, Wegdaten © OpenStreetMap-Mitwirkende. Distanzen sind horizontal gemessen, wie auf der Karte. Der Massstabsbalken zeigt, wie lang 1 cm deiner Papierkarte hier auf dem Bildschirm ist.</p>
   </div>
 
@@ -341,7 +342,7 @@ a.chip{text-decoration:none}
         <div id="d3Out"></div>
       </div>
       <div id="d3EstPane" hidden>
-        <p style="margin:0">Schätze die Luftlinie von A nach B. Nutze den Massstabsbalken unten links oder das Gitter: ein Quadrat ist 1 km breit.</p>
+        <p style="margin:0">Wähle zuerst den Ausschnitt auf der Karte, dann «Neue Aufgabe». Schätze die Luftlinie von A nach B. Nutze den Massstabsbalken unten links oder das Gitter: ein Quadrat ist 1 km breit.</p>
         <div class="row"><button class="btn pri" id="d3New">Neue Aufgabe</button><input type="number" id="d3In" min="0" step="10" inputmode="numeric" placeholder="Meter" aria-label="Geschätzte Distanz in Metern"><button class="btn" id="d3Chk">Prüfen</button></div>
         <div id="d3Fb" aria-live="polite"></div>
         <p class="note" id="d3Stat"></p>
@@ -709,7 +710,7 @@ function d3Setup(){
   document.querySelectorAll('#scTab td:nth-child(2),#scTab td:nth-child(3)').forEach((td,i)=>td.style.fontWeight=s&&((i%2===0&&s.scale===25)||(i%2===1&&s.scale===50))?'600':'');
   if(!s||!LF)return;
   const key=s.scale+'-'+s.nr;
-  if(!D3.map){D3.map=LF.map('map3',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,boxZoom:false});D3.map.on('click',d3Click);D3.map.on('zoomend moveend resize',d3Bar)}
+  if(!D3.map){D3.map=LF.map('map3',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,boxZoom:false,doubleClickZoom:false});D3.map.on('click',d3Click);D3.map.on('zoomend moveend resize',d3Bar)}
   if(D3.key===key){setTimeout(()=>{D3.map.invalidateSize();d3Bar()},50);return}
   D3.key=key;D3.layers.forEach(l=>l.remove());D3.layers=[];d3Clear();d3ClearTask();
   const[x0,y0,x1,y1]=s.bbox;D3.map.setMaxBounds(null);D3.map.setView(wgs((x0+x1)/2,(y0+y1)/2),s.scale===25?14:13,{animate:false});
@@ -828,7 +829,7 @@ function d3Chk(){
   d3Stat();
 }
 function d3Stat(){$('d3Stat').textContent=D3.stat.n?`Bisher ${D3.stat.n} ${D3.stat.n===1?'Schätzung':'Schätzungen'}, mittlere Abweichung ${(D3.stat.sum/D3.stat.n).toFixed(0)} %.`:''}
-function d3Mode(m){D3.mode=m;document.querySelector('#mbar3 .rgrp').hidden=m!=='mess';$('d3Mess').setAttribute('aria-pressed',m==='mess');$('d3Est').setAttribute('aria-pressed',m==='est');$('d3MessPane').hidden=m!=='mess';$('d3EstPane').hidden=m!=='est';
+function d3Mode(m){D3.mode=m;$('d3Hint').textContent=m==='mess'?'Ausschnitt wählen: Karte ziehen (Handy: mit einem Finger), zoomen mit − / + oder zwei Fingern. Antippen setzt einen Routenpunkt.':'Ausschnitt wählen: Karte ziehen und zoomen. «Neue Aufgabe» setzt A und B in den sichtbaren Ausschnitt.';document.querySelector('#mbar3 .rgrp').hidden=m!=='mess';$('d3Mess').setAttribute('aria-pressed',m==='mess');$('d3Est').setAttribute('aria-pressed',m==='est');$('d3MessPane').hidden=m!=='mess';$('d3EstPane').hidden=m!=='est';
   if(m==='est'){if(D3.route)D3.route.remove();D3.marks.forEach(x=>x.remove());if(!D3.task)d3New()}else{D3.ab.forEach(x=>x.remove());D3.ab=[];D3.task=null;d3Draw()}}
 /* Schrittmassstab */
 function psCalc(){
