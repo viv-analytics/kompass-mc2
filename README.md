@@ -164,4 +164,8 @@ Kartenfunktionen brauchen Internetzugang. iPhone-Sensoren lassen sich nur über 
 
 ## Lizenz
 
-Für den Code ist noch keine Lizenz festgelegt. Für Daten und Bibliotheken gelten die Bedingungen der jeweiligen Anbieter (siehe [Datenquellen und Lizenzen](#datenquellen-und-lizenzen)).
+| Bestandteil | Lizenz |
+|---|---|
+| Code | [MIT](LICENSE), © 2026 Vivian Steiger (viv-analytics) |
+| Lerninhalte (Texte, Übungen, Quiz, Kompassgrafik) | [CC BY 4.0](LICENSE-CONTENT.md), © 2026 Vivian Steiger (viv-analytics) |
+| Daten, Bibliotheken, Schrift, Marken | eigene Bedingungen der Anbieter, siehe [Datenquellen und Lizenzen](#datenquellen-und-lizenzen) und [LICENSE-CONTENT.md](LICENSE-CONTENT.md) |
