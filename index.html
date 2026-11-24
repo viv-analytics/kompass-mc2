@@ -84,6 +84,7 @@ main[hidden],#m2[hidden]{display:none!important}
 #lmap{position:absolute;inset:0;background:#e9ede4}
 #miniC{position:absolute;width:120px;height:200px;left:calc(50% - 60px);top:calc(50% - 95px);transform-origin:60px 95px;pointer-events:none;z-index:500}
 #ndl2{position:absolute;width:100px;height:100px;left:calc(50% - 50px);top:calc(50% - 50px);pointer-events:none;z-index:600}
+.mapbox#mapbox{cursor:grab;touch-action:none}.mapbox#mapbox.drag{cursor:grabbing}
 .mapbadge{position:absolute;left:10px;top:10px;z-index:700;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:13px;font-weight:600}
 .glab{font:600 11px Barlow,sans-serif;color:#1f5fbf;background:rgba(255,255,255,.8);padding:0 3px;border-radius:3px;white-space:nowrap;width:auto!important;height:auto!important}
 .mapEmpty,#mapEmpty{position:absolute;inset:0;z-index:800;display:grid;place-items:center;text-align:center;padding:24px;background:var(--card);color:var(--mut)}#mapEmpty b{color:var(--ink);font-size:18px}#mapEmpty[hidden],.mapEmpty[hidden]{display:none}#mapEmpty3 b{color:var(--ink);font-size:18px}
@@ -256,7 +257,7 @@ a.chip{text-decoration:none}
 
     <div class="card" id="exCard" hidden>
       <h2>Karte einnorden</h2>
-      <p style="margin:8px 0 0">Die Karte liegt verdreht vor dir. Der Kompass ist auf 0° gestellt und liegt parallel zu den Gitterlinien. Dreh die Karte samt Kompass, bis die Nadel im Nordpfeil liegt.</p>
+      <p style="margin:8px 0 0">Die Karte liegt verdreht vor dir. Du kannst sie jederzeit mit der Maus oder dem Finger verschieben und mit dem Mausrad zoomen. Der Kompass ist auf 0° gestellt und liegt parallel zu den Gitterlinien. Dreh die Karte samt Kompass, bis die Nadel im Nordpfeil liegt.</p>
       <div class="stat" id="mst"></div>
       <div class="row"><button class="btn pri" id="mNew">Neue Aufgabe</button><button class="btn" id="mPan">Ausschnitt verschieben</button><button class="btn" id="mBack" hidden>Zurück ohne Änderung</button></div>
       <div class="row">
@@ -646,7 +647,7 @@ function shRender(){
 function m2Setup(){
   shRender();const s=SH.sel;if(!s)return;
   if(!LF){$('mMsg').textContent='Die Kartenbibliothek konnte nicht geladen werden (offline?).';return}
-  if(!M.map){M.map=LF.map('lmap',{zoomControl:false,dragging:false,scrollWheelZoom:'center',wheelPxPerZoomLevel:90,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,attributionControl:false});M.map.on('moveend zoomend',()=>{m2Mer();m2Draw()})}
+  if(!M.map){M.map=LF.map('lmap',{zoomControl:false,dragging:false,scrollWheelZoom:'center',wheelPxPerZoomLevel:90,touchZoom:'center',doubleClickZoom:false,boxZoom:false,keyboard:false,attributionControl:false});M.map.on('moveend zoomend',()=>{m2Mer();m2Draw()});m2Drag()}
   [M.tiles,M.grid,M.frame].forEach(l=>l&&l.remove());
   {const[a0,b0,a1,b1]=s.bbox;M.map.setMaxBounds(null);M.map.setView(wgs((a0+a1)/2,(b0+b1)/2),s.scale===25?14:13,{animate:false})}
   M.tiles=LF.tileLayer(`https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe-pk${s.scale}.noscale/default/current/3857/{z}/{x}/{y}.jpeg`,{maxZoom:18,minZoom:11}).on('tileerror',()=>{$('mMsg').textContent='Kartenkacheln von swisstopo konnten nicht geladen werden.'}).addTo(M.map);
@@ -659,12 +660,21 @@ function m2Setup(){
   const sw=wgs(x0,y0),ne=wgs(x1,y1);M.map.setMaxBounds(LF.latLngBounds([Math.min(sw[0],wgs(x1,y0)[0]),Math.min(sw[1],wgs(x0,y1)[1])],[Math.max(ne[0],wgs(x0,y1)[0]),Math.max(ne[1],wgs(x1,y0)[1])]).pad(.15));
   setTimeout(()=>{M.map.invalidateSize();m2New()},60);
 }
+/* Verschieben trotz gedrehter Karte: Bildschirmbewegung in Kartenrichtung zurückdrehen */
+function m2Drag(){
+  const box=$('mapbox'),P=new Map();let last=null;
+  box.addEventListener('pointerdown',e=>{if(e.target.closest('button,input'))return;P.set(e.pointerId,1);if(P.size===1){last=[e.clientX,e.clientY];box.setPointerCapture(e.pointerId);box.classList.add('drag')}else last=null});
+  box.addEventListener('pointermove',e=>{if(!last||P.size!==1||!M.map)return;const dx=e.clientX-last[0],dy=e.clientY-last[1];last=[e.clientX,e.clientY];
+    const t=M.theta*Math.PI/180,mx=dx*Math.cos(t)+dy*Math.sin(t),my=-dx*Math.sin(t)+dy*Math.cos(t);M.map.panBy([-mx,-my],{animate:false})});
+  const end=e=>{P.delete(e.pointerId);if(!P.size){last=null;box.classList.remove('drag')}};
+  box.addEventListener('pointerup',end);box.addEventListener('pointercancel',end);
+}
 function m2Mer(){if(!M.map)return;const c=M.map.getCenter();if(M.mer)M.mer.remove();M.mer=LF.polyline([[c.lat-.08,c.lng],[c.lat+.08,c.lng]],{color:'#111',weight:1.6,dashArray:'6 5',interactive:false});if($('tMer').checked)M.mer.addTo(M.map);
   const cv=convAt([c.lat,c.lng]);$('northTab').innerHTML=`<tr><td data-l="Nordrichtung">Geografisch Nord</td><td data-l="Bezug">Meridian, Richtung Nordpol</td><td data-l="Abweichung">0°</td></tr>
   <tr><td data-l="Nordrichtung">Gitternord</td><td data-l="Bezug">senkrechte Linien der Landeskarte (LV95)</td><td data-l="Abweichung">${cv>0?'+':''}${cv.toFixed(2)}° (${cv>0?'östlich':'westlich'})</td></tr>
   <tr><td data-l="Nordrichtung">Magnetisch Nord</td><td data-l="Bezug">wohin die Kompassnadel zeigt</td><td data-l="Abweichung">wenige Grad östlich, genauer Wert in Modul 4</td></tr>`}
 function needleA(){return $('tLive').checked&&L.got?-heading():0}
-function setPan(on){M.pan=on;if(!M.map)return;$('mBack').hidden=!on;$('mNew').hidden=on;if(on){M.prev={c:M.map.getCenter(),z:M.map.getZoom(),t:M.theta};M.theta=0;$('tLive').checked=false;M.map.dragging.enable();M.map.touchZoom.enable();$('mPan').textContent='Übung starten';$('mPan').classList.add('pri')}else{M.map.dragging.disable();M.map.touchZoom.disable();$('mPan').textContent='Ausschnitt verschieben';$('mPan').classList.remove('pri')}m2Draw()}
+function setPan(on){M.pan=on;if(!M.map)return;$('mBack').hidden=!on;$('mNew').hidden=on;if(on){M.prev={c:M.map.getCenter(),z:M.map.getZoom(),t:M.theta};M.theta=0;$('tLive').checked=false;$('mPan').textContent='Übung starten';$('mPan').classList.add('pri')}else{$('mPan').textContent='Ausschnitt verschieben';$('mPan').classList.remove('pri')}m2Draw()}
 function m2Draw(){
   if(!M.map||!SH.sel)return;
   const conv=curConv();
@@ -675,7 +685,7 @@ function m2Draw(){
   $('rM').value=Math.round(norm(M.theta));$('oM').textContent=Math.round(norm(M.theta))+'°';$('rM').disabled=M.pan;
   $('mbadge').textContent=`LK${SH.sel.scale} ${SH.sel.nr} ${SH.sel.name} · Zoom ${M.map.getZoom()}`;
   const st=$('mst');
-  if(M.pan){st.classList.remove('good');st.innerHTML='<span>Verschiebe die Karte zu einem Ausschnitt, den du im Gelände kennst. Dann «Übung starten», oder «Zurück ohne Änderung» für den vorherigen Ausschnitt.</span>';return}
+  if(M.pan){st.classList.remove('good');st.innerHTML='<span>Die Karte ist jetzt genordet. Ziehe sie zu einem Ausschnitt, den du im Gelände kennst. Dann «Übung starten», oder «Zurück ohne Änderung» für den vorherigen Ausschnitt.</span>';return}
   const e=norm(M.theta+conv-nA),ok=Math.abs(e)<=2;st.classList.toggle('good',ok);
   st.innerHTML=$('tLive').checked?`<span class="big">${L.got?Math.round(heading())+'°':'–'}</span><span>${L.got?'Live: Die Karte dreht gegen dein iPhone und bleibt so eingenordet.':'Live braucht aktive Sensoren: Modul 1 › Live mit iPhone › Sensoren aktivieren.'}</span>`
    :`<span class="big">${ok?'0°':Math.abs(Math.round(e))+'°'}</span><span>${ok?'Eingenordet: Rot in Rot. Kartennord zeigt nach Norden.':'Noch '+Math.abs(Math.round(e))+'° daneben. Karte '+(e>0?'nach links':'nach rechts')+' drehen.'}</span>`;
